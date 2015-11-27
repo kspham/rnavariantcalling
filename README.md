@@ -5,12 +5,13 @@ Requirement:
 python 2.7+
 
 
-#usage: pipe.py [-h] [--reads READS [READS ...]] [--outdir OUTDIR]
+#usage: 
+               pipe.py [-h] [--reads READS [READS ...]] [--outdir OUTDIR]
                [-r1 1.fastq.gz] [-r2 2.fastq.gz] [--ThreadsN N]
 
 #Automatically generate SNPs variant for given RNA short reads
 
-optional arguments:
+#optional arguments:
   -h, --help            show this help message and exit
   --reads READS [READS ...], -U READS [READS ...]
                         Input RNA unpaired reads
