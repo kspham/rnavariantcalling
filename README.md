@@ -61,5 +61,4 @@ MIT
    [hg19 genome indexed by HISAT2]: <ftp://ftp.ccb.jhu.edu/pub/infphilo/hisat2/data/grch37.tar.gz>
    [hg19 genome un-indexed]:<http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.2bit>
    [hg19 gene annotation file]:<ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz>
-   
 
