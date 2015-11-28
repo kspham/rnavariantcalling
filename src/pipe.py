@@ -11,6 +11,7 @@ HISAT2out = os.environ["HISAT2out"]
 STARref =os.environ["STARREF"]
 HISAT2ref=os.environ["HISAT2REF"]
 REF =os.environ["REF"]
+SRC = os.environ["SRC"]
 
 #How to execute a command
 def exeCommand(sCommand):
@@ -74,23 +75,18 @@ def filter(output):
 	exeCommand(shellEscape(' '.join(["$VCFTOOLS", "--gzvcf","human_variant.vcf.gz", "--exclude-positions"," ../lib/human_edit.txt", 
 "--recode","--recode-INFO-all", "--out", "final"])))
 	
-	exeCommand(shellEscape("mv final.recode.vcf "+output)
+	exeCommand(shellEscape("mv final.recode.vcf "+output))
 	exeCommand(shellEscape("rm -fr "+TEMP))
 
 if __name__ == '__main__':
 
 	parser=argparse.ArgumentParser(description='Automatically generate SNPs variant for give RNA short reads')
-	parser.add_argument('--reads', '-U', type=str,help='Input RNA unpaired reads', nargs='+')
+	parser.add_argument('--reads', '-U', type=str,help='Input RNA reads paired or unpaired', nargs='+', required=True)
 	parser.add_argument('--outdir', '-o',type=str, help='Where the final result will be stored')
-	parser.add_argument('-r1',metavar='1.fastq.gz', type=str, help='First reads')
-	parser.add_argument('-r2',metavar='2.fastq.gz', type=str, help='Second reads')
-	parser.add_argument('--ThreadsN', metavar='N', type=str, help='Number of threads')
+	parser.add_argument('--ThreadsN', metavar='N', type=str, help='Number of threads', default='4')
 	args=parser.parse_args()
 
-	if not args.r1:
-		reads = args.reads
-	else:
-		reads = [args.r1] + [args.r2]
+	reads = args.reads
 
 	if '.gz' in reads[0]:
 		iszipped = True
@@ -98,13 +94,13 @@ if __name__ == '__main__':
 		iszipped = False
 
 	for i in range(len(reads)):
-		reads[i] = os.path.abspath(FILE+'/../'+reads[i])
+		reads[i] = os.path.abspath(reads[i])
 	
 	os.chdir(STARout)
-	STAR_mapping(reads, iszipped, args.ThreadsN, REFERENCE)
+	STAR_mapping(reads, iszipped, args.ThreadsN, STARref)
 
 	os.chdir(HISAT2out)
-	HISAT2_mapping(reads, args.ThreadsN,"HISAT2.Aligned", args.r1 != None)
+	HISAT2_mapping(reads, args.ThreadsN,"HISAT2.Aligned", len(reads)>1)
 	
 	Variant_Calling("Aligned.sortedByCoord.out.bam", "HISAT2.Aligned", STARout, HISAT2out, args.ThreadsN)
 	
