@@ -22,3 +22,5 @@ export FILTER=$FPATH/scripts/filter.sh
 export HISAT2_INDEXES=$HISAT2REF
 
 export PATH=$PATH:$SRC
+mkdir $STARout
+mkdir $HISAT2out
