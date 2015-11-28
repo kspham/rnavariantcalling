@@ -1,0 +1,22 @@
+pushd `dirname $PWD` > /dev/null
+FPATH=`pwd -P`
+popd > /dev/null
+
+export TEMP=$FPATH/tmp
+export STAR=$FPATH/bin/STARaligner/STAR
+export HISAT2=$FPATH/bin/hisat2-2.0.1-beta/hisat2
+export HISAT2out=$FPATH/HISAT2
+export STARout=$FPATH/STAR
+export VCFPERL=$FPATH/bin/vcftools_0.1.13/perl
+export VCFTOOLS=$FPATH/bin/vcftools_0.1.13/bin/vcftools
+export VCF_MERGE=$FPATH/bin/vcftools_0.1.13/bin/vcf-merge
+export FREEBAYES=$FPATH/bin/freebayes/bin/freebayes
+export SRC=$FPATH/src/
+export CHRO=$FPATH/lib/chr_coordinates.txt
+export HUMAN_EDITING_SITES=$FPATH/lib/human_edit.txt
+export GTF=$FPATH/lib/Homo_sapiens.GRCh37.75.gtf
+export STAREF=$FPATH/STARref/out
+export HISAT2REF=$FPATH/HISAT2ref/grch37
+export REF=$FPATH/lib/Hg19.fa
+export FILTER=$FPATH/scripts/filter.sh
+export HISAT2_INDEXES=$HISAT2REF

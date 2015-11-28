@@ -2,76 +2,80 @@
 
 import os,sys
 import argparse
+import subprocess
 
-FILE = os.path.dirname(os.path.realpath(__file__))
 
-TEMP= FILE +"/../tmp"
-STAR = FILE + "/../bin/STARaligner/STAR"
-HISAT2_BUILD = FILE + "/../bin/hisat2-2.0.1-beta/hisat2-build"
-HISAT2 = FILE + "/../bin/hisat2-2.0.1-beta/hisat2"
-HISAT2out = FILE +"/../HISAT2"
-STARout = FILE +"/../STAR"
-VCFPERL = FILE +"/../bin/vcftools_0.1.13/perl"
-VCFTOOLS =  FILE+"/../bin/vcftools_0.1.13/bin/vcftools"
-VCF_MERGE = FILE+"/../bin/vcftools_0.1.13/bin/vcf-merge"
-FREEBAYES = FILE + "/../bin/freebayes/bin/freebayes"
-SRC = FILE+"/"
-CHRO = FILE +"/../lib/chr_coordinates.txt"
-HUMAN_EDITING_SITES = FILE+"/../lib/human_edit.txt"
-GTF = FILE+"/../lib/Homo_sapiens.GRCh37.75.gtf"
-REFERENCE = FILE+"/../reference"
-REF = FILE+"/../lib/GRCh37.fa"
-SCRIPTS = FILE+"/../scripts/script.sh"
-os.system("HISAT2_INDEXES="+HISAT2out)
+TEMP=os.environ["TEMP"]
+STARout =os.environ["STARout"]
+HISAT2out = os.environ["HISAT2out"]
+STARref =os.environ["STARREF"]
+HISAT2ref=os.environ["HISAT2REF"]
+REF =os.environ["REF"]
 
-"""def STAR_Genome_Generate(dir, ref, gtf, N, overhang):
-	os.system(' '.join([STAR, "--runMode", "genomeGenerate", "--runThreadN", N, "--genomeDir", dir, "--genomeFastaFiles", 
-		' '.join([f for f in ref]), "--sjdbGTFfile", gtf, "--sjdbOverhang", overhang]))"""
-	
+#How to execute a command
+def exeCommand(sCommand):
+
+###Get all output data
+	outData, errData = subprocess.Popen(sCommand, shell=True, stdout=subprocess.PIPE,stderr=subprocess.STDOUT, close_fds=True).communicate()
+
+###Get all response data
+	for lineData in outData.splitlines():
+		if(self.RUNNING_DEBUG_FLAG == 1):
+			outStringData = str(lineData)
+			print("%s" % (outStringData))
+###If there is error
+	if((errData != None) and (len(errData) > 0)):
+		print("Command has error:{0}".format(errData))
+
+def shellEscape(s):
+	return s.replace("(","\(").replace(")","\)")
+
+#Mapping with STAR	
 def STAR_mapping(reads, ReadIsGzipped, N, dir):
-	os.system(' '.join([STAR, "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
+	exeCommand(shellEscape(' '.join(["$STAR", "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
 		' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax", "500000", "--outFilterMismatchNmax", "10", 
-"--outSAMtype", "BAM", "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])) 
-	os.system(' '.join(["samtools index", "Aligned.sortedByCoord.out.bam"]))
+"--outSAMtype", "BAM", "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
+	exeCommand(shellEscape(' '.join(["samtools index", "Aligned.sortedByCoord.out.bam"])))
 
-"""def HISAT2_Index(ref, prefix):
-	os.system(' '.join([HISAT2_BUILD, "-p", N, ref, prefix]))"""	
 
+#Mapping with HISAT2
 def HISAT2_mapping(reads, N, output, pairend):
 	if pairend:
-		os.system(' '.join([HISAT2, "--threads", N, "-q", "-x", "humanref", "-1", reads[0], "-2", reads[1], "-S", output]))
+		exeCommand(shellEscape(' '.join(["$HISAT2", "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S", 
+output])))
 	else:
-		os.system(' '.join([HISAT2, "--threads", N, "-q", "-x", "humanref", "-U", ' '.join([read for read in reads]), "-S", output]))
-	#os.system(' '.join(["mv", output, HISAT2]))
-	os.system(' '.join(["samtools view -Sb", output, "| samtools sort -o -", output+".sorted"]))
-	os.system(' '.join(["samtools index", output+".sorted.bam"]))
+		exeCommand(shellEscape(' '.join(["$HISAT2", "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
+"-S", output])))
+
+	exeCommand(shellEscape(' '.join(["samtools view -Sb", output, "| samtools sort -o -", output+".sorted"])))
+	exeCommand(shellEscape(' '.join(["samtools index", output+".sorted.bam"])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
 	for bam, dir in [(bam1, dir1), (bam2, dir2)]:
-		os.system(' '.join(["python2.7",SRC+"multithread.py",REF, FREEBAYES, dir+"/"+bam, CHRO,threads, dir+"/"]))
+		exeCommand(shellEscape(' '.join(["python","$SRC/multithread.py","$REF", "$FREEBAYES", dir+"/"+bam, "$CHRO",threads, dir+"/"])))
 
 def filter(output):
 	
-	os.system("export PERL5LIB="+VCFPERL)
-	os.system("mkdir "+TEMP)	
+	os.environ["PERL5LIB"]=os.environ["VCFPERL"]
+	exeCommand(shellEscape("mkdir $TEMP"))	
 
 	#Stage 1
-	os.system(' '.join(["sh", SCRIPTS, VCFTOOLS, HISAT2out, STARout, TEMP]))
+	exeCommand(shellEscape(' '.join(["sh", "$FILTER", "$VCFTOOLS", "$HISAT2out", "$STARout", "$TEMP"])))
 
 	#Stage 2 merging
 	listFile = os.listdir(TEMP)
 	os.chdir(TEMP)
 	for f in listFile:
-		os.system(' '.join(["bgzip -c", f, ">", f+".gz"]))
-		os.system(' '.join(["tabix -p", "vcf", f+".gz"]))
-	os.system(' '.join([VCF_MERGE, ' '.join([f+".gz" for f in listFile]), "| bgzip -c >", "human_variant.vcf.gz"]))
+		exeCommand(shellEscape(' '.join(["bgzip -c", f, ">", f+".gz"])))
+		exeCommand(shellEscape(' '.join(["tabix -p", "vcf", f+".gz"])))
+	exeCommand(shellEscape(' '.join(["$VCF_MERGE", ' '.join([f+".gz" for f in listFile]), "| bgzip -c >", "human_variant.vcf.gz"])))
 
 	#Stage 3
-	os.system(' '.join([VCFTOOLS, "--gzvcf","human_variant.vcf.gz", "--exclude-positions"," ../lib/human_edit.txt", 
-"--recode","--recode-INFO-all", "--out", "final"]))
+	exeCommand(shellEscape(' '.join(["$VCFTOOLS", "--gzvcf","human_variant.vcf.gz", "--exclude-positions"," ../lib/human_edit.txt", 
+"--recode","--recode-INFO-all", "--out", "final"])))
 	
-	os.system("mv final.recode.vcf "+output)
-	os.system("rm -fr "+TEMP)
+	exeCommand(shellEscape("mv final.recode.vcf "+output)
+	exeCommand(shellEscape("rm -fr "+TEMP))
 
 if __name__ == '__main__':
 
@@ -95,10 +99,6 @@ if __name__ == '__main__':
 
 	for i in range(len(reads)):
 		reads[i] = os.path.abspath(FILE+'/../'+reads[i])
-	print reads
-	
-	#os.system("mkdir reference")
-	#STAR_Genome_Generate("reference", [ref], GTF, threads, "100")
 	
 	os.chdir(STARout)
 	STAR_mapping(reads, iszipped, args.ThreadsN, REFERENCE)
