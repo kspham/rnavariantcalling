@@ -53,13 +53,11 @@ $ python pipe.py [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [-r1 read1]
     -h, --helps help message and exit 
     --reads READS [READS ...], -U READS [READS ...] Input RNA unpaired reads 
     ---outdir OUTDIR, -o OUTDIR Where the final result will be stored 
-    -r1 1.fastq.gz First reads (In case of paired-end reads) 
-    -r2 2.fastq.gz Second reads 
     --ThreadsN N Number of threads
 ### Example
     - Paired-ends reads: 
 ```
-$ rnavariantcalling --ThreadsN 32 -r1 1.fastq.gz -r2 2.fastq.gz -o /output/directory/
+$ rnavariantcalling --ThreadsN 32 --reads 1.fastq.gz 2.fastq.gz -o /output/directory/
 ```
 
     -Single-end read: 
