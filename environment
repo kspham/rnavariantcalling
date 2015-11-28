@@ -1,7 +1,8 @@
-pushd `dirname $PWD` > /dev/null
-FPATH=`pwd -P`
-popd > /dev/null
+#pushd `dirname $PWD` > /dev/null
+FPATH=`pwd`
+#popd > /dev/null
 
+export SAMBAMBA=$FPATH/bin/sambamba_v0.5.9
 export TEMP=$FPATH/tmp
 export STAR=$FPATH/bin/STARaligner/STAR
 export HISAT2=$FPATH/bin/hisat2-2.0.1-beta/hisat2
@@ -17,7 +18,7 @@ export HUMAN_EDITING_SITES=$FPATH/lib/human_edit.txt
 export GTF=$FPATH/lib/Homo_sapiens.GRCh37.75.gtf
 export STARREF=$FPATH/STARref/out
 export HISAT2REF=$FPATH/HISAT2ref/grch37
-export REF=$FPATH/lib/Hg19.fa
+export REF=$FPATH/lib/hg19.fa
 export FILTER=$FPATH/scripts/filter.sh
 export HISAT2_INDEXES=$HISAT2REF
 
