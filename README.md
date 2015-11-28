@@ -20,14 +20,35 @@ RNAvariantcalling uses a number of materials to work properly:
 * [hg19 genome un-indexed] - for variant calling
 * [hg19 gene annotation file]
 * Python 2.7+
+* vcftools
+* STAR aligner
+* HISAT2 aligner
+* Freebayes variant calling
 
 These will be downloaded automatically at the very first time you run rnavariantcalling.
 
-### Installation
+And also, rnavariantcalling need these tools below have to be installed on your computer:
+* samtools 
+* tabix
+* bgzip
 
-### Usage 
+### Installation
 ```
-$ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [-r1 read1] [-r2 read2] [--outdir OUTDIR]
+1. $git clone --recursive https://github.com/kspham/rnavariantcalling.git
+2. $cd rnavariantcalling
+
+At the very first time you run rnavariantcalling, you have to download the indexed human genome for STAR Aligner and HISAT2 Aligner, and also the gene annotation of human genome.
+
+3. $./initial.sh
+
+4.Done! Now you rnavariantcalling can work properly.
+
+```
+### Usage 
+
+```
+$ cd rnavariantcalling && source ./environment
+$ python pipe.py [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [-r1 read1] [-r2 read2] [--outdir OUTDIR]
 ```
     -h, --helps help message and exit 
     --reads READS [READS ...], -U READS [READS ...] Input RNA unpaired reads 
