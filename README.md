@@ -48,10 +48,10 @@ At the very first time you run rnavariantcalling, you have to download the index
 
 ```
 $ cd rnavariantcalling && source ./environment
-$ python pipe.py [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [-r1 read1] [-r2 read2] [--outdir OUTDIR]
+$ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR]
 ```
     -h, --helps help message and exit 
-    --reads READS [READS ...], -U READS [READS ...] Input RNA unpaired reads 
+    --reads READS [READS ...], -U READS [READS ...] Input RNA reads 
     ---outdir OUTDIR, -o OUTDIR Where the final result will be stored 
     --ThreadsN N Number of threads
 ### Example
