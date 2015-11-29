@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 """ Pipeline calling variant from RNA-seq"""
 
@@ -57,7 +58,7 @@ output])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
 	for bam, dir in [(bam1, dir1), (bam2, dir2)]:
-		exeCommand(shellEscape(' '.join(["python2.7","$SRC/multithread.py","$REF", "freebayes", dir+"/"+bam, "$CHRO",threads, 
+		exeCommand(shellEscape(' '.join(["multithread.py","$REF", "freebayes", dir+"/"+bam, "$CHRO",threads, 
 dir+"/"])))
 
 def filter(out):
