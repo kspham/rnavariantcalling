@@ -7,7 +7,11 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
+<<<<<<< HEAD
 setenv VIRTUAL_ENV "/home/ptdtan/venv"
+=======
+setenv VIRTUAL_ENV "/scratchfast2/son/ptdtan/virtualenv-1.9/venv"
+>>>>>>> 380859c0b51d6a929286d1fa0b265ccc8a8ed9b9
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/bin:$PATH"
