@@ -18,7 +18,7 @@ rm grch37.tar.gz
 
 cd $SCRIPTPATH/lib/
 wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.2bit
-wget ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz
+#wget ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz
 
 gunzip Homo_sapiens.GRCh37.75.gtf.gz
 
