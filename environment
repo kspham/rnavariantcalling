@@ -4,14 +4,12 @@ FPATH=`pwd`
 
 export SAMBAMBA=$FPATH/bin/sambamba_v0.5.9
 export TEMP=$FPATH/tmp
-export STAR=$FPATH/bin/STARaligner/STAR
-export HISAT2=$FPATH/bin/hisat2-2.0.1-beta/hisat2
 export HISAT2out=$FPATH/HISAT2
 export STARout=$FPATH/STAR
-export VCFPERL=$FPATH/bin/vcftools_0.1.13/perl
-export VCFTOOLS=$FPATH/bin/vcftools_0.1.13/bin/vcftools
-export VCF_MERGE=$FPATH/bin/vcftools_0.1.13/bin/vcf-merge
-export FREEBAYES=$FPATH/bin/freebayes/bin/freebayes
+export PERL5LIB=$FPATH/bin/vcftools_0.1.13/perl
+
+VCFTOOLS=$FPATH/bin/vcftools_0.1.13/bin/
+
 export SRC=$FPATH/src/
 export CHRO=$FPATH/lib/chr_coordinates.txt
 export HUMAN_EDITING_SITES=$FPATH/lib/human_edit.txt
@@ -22,6 +20,10 @@ export REF=$FPATH/lib/hg19.fa
 export FILTER=$FPATH/scripts/filter.sh
 export HISAT2_INDEXES=$HISAT2REF
 
-export PATH=$PATH:$SRC
+export PATH=$PATH:$SRC:$FPATH/bin:$VCFTOOLS
+
+rm -fr $STARout
+rm -fr $HISAT2out
+
 mkdir $STARout
 mkdir $HISAT2out

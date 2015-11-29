@@ -33,7 +33,7 @@ def shellEscape(s):
 
 #Mapping with STAR	
 def STAR_mapping(reads, ReadIsGzipped, N, dir):
-	exeCommand(shellEscape(' '.join(["$STAR", "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
+	exeCommand(shellEscape(' '.join(["STAR", "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
 		' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax", "500000", "--outFilterMismatchNmax", "10", 
 "--outSAMtype", "BAM", "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA index -t 32", "Aligned.sortedByCoord.out.bam"])))
@@ -42,10 +42,10 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
 #Mapping with HISAT2
 def HISAT2_mapping(reads, N, output, pairend):
 	if pairend:
-		exeCommand(shellEscape(' '.join(["$HISAT2", "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S", 
+		exeCommand(shellEscape(' '.join(["hisat2", "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S", 
 output])))
 	else:
-		exeCommand(shellEscape(' '.join(["$HISAT2", "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
+		exeCommand(shellEscape(' '.join(["hisat2", "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
 "-S", output])))
 
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA view -S -f bam -t 32", output, ">", output+".bam"])))
@@ -54,15 +54,14 @@ output])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
 	for bam, dir in [(bam1, dir1), (bam2, dir2)]:
-		exeCommand(shellEscape(' '.join(["python","$SRC/multithread.py","$REF", "$FREEBAYES", dir+"/"+bam, "$CHRO",threads, dir+"/"])))
+		exeCommand(shellEscape(' '.join(["python","$SRC/multithread.py","$REF", "freebayes", dir+"/"+bam, "$CHRO",threads, dir+"/"])))
 
 def filter(output):
 	
-	os.environ["PERL5LIB"]=os.environ["VCFPERL"]
 	exeCommand(shellEscape("mkdir $TEMP"))	
 
 	#Stage 1
-	exeCommand(shellEscape(' '.join(["sh", "$FILTER", "$VCFTOOLS", "$HISAT2out", "$STARout", "$TEMP"])))
+	exeCommand(shellEscape(' '.join(["sh", "$FILTER", "vcf-tools", "$HISAT2out", "$STARout", "$TEMP"])))
 
 	#Stage 2 merging
 	listFile = os.listdir(TEMP)
@@ -70,10 +69,10 @@ def filter(output):
 	for f in listFile:
 		exeCommand(shellEscape(' '.join(["bgzip -c", f, ">", f+".gz"])))
 		exeCommand(shellEscape(' '.join(["tabix -p", "vcf", f+".gz"])))
-	exeCommand(shellEscape(' '.join(["$VCF_MERGE", ' '.join([f+".gz" for f in listFile]), "| bgzip -c >", "human_variant.vcf.gz"])))
+	exeCommand(shellEscape(' '.join(["vcf-merge", ' '.join([f+".gz" for f in listFile]), "| bgzip -c >", "human_variant.vcf.gz"])))
 
 	#Stage 3
-	exeCommand(shellEscape(' '.join(["$VCFTOOLS", "--gzvcf","human_variant.vcf.gz", "--exclude-positions"," ../lib/human_edit.txt", 
+	exeCommand(shellEscape(' '.join(["vcf-tools", "--gzvcf","human_variant.vcf.gz", "--exclude-positions"," ../lib/human_edit.txt", 
 "--recode","--recode-INFO-all", "--out", "final"])))
 	
 	exeCommand(shellEscape("mv final.recode.vcf "+output))
