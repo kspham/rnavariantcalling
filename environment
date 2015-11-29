@@ -7,10 +7,14 @@ export TEMP=$FPATH/tmp
 export HISAT2out=$FPATH/HISAT2
 export STARout=$FPATH/STAR
 export PERL5LIB=$FPATH/bin/vcftools_0.1.13/perl
+export LIB=$FPATH/lib
 
 VCFTOOLS=$FPATH/bin/vcftools_0.1.13/bin/
+HISAT2=$FPATH/bin/hisat2-2.0.1-beta
+OUTDIR=$FPATH/human
 
-export SRC=$FPATH/src/
+
+export SRC=$FPATH/src
 export CHRO=$FPATH/lib/chr_coordinates.txt
 export HUMAN_EDITING_SITES=$FPATH/lib/human_edit.txt
 export GTF=$FPATH/lib/Homo_sapiens.GRCh37.75.gtf
@@ -20,10 +24,7 @@ export REF=$FPATH/lib/hg19.fa
 export FILTER=$FPATH/scripts/filter.sh
 export HISAT2_INDEXES=$HISAT2REF
 
-export PATH=$PATH:$SRC:$FPATH/bin:$VCFTOOLS
-
-rm -fr $STARout
-rm -fr $HISAT2out
+export PATH=$PATH:$SRC:$FPATH/bin:$VCFTOOLS:$HISAT2
 
 mkdir $STARout
 mkdir $HISAT2out

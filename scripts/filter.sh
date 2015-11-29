@@ -1,8 +1,12 @@
+#!/bin/bash
+
+IFS='
+'
+
 VCFTOOLS=$1
 HISAT2=$2
 STAR=$3
 EDITINGSITES=$4
-OUTDIR=$5
 
 for f in $HISAT2/*.vcf; do
 	bgzip -c $f > $f.gz
@@ -24,7 +28,7 @@ for f in $STAR/*.vcf.gz; do
 	$VCFTOOLS --gzvcf $f --positions $f.common --recode --recode-INFO-all --out "${f%.*}"
 done
 
-mv $STAR/*recode* $OUTDIR
+mv $STARout/*recode* $TEMP
 
 rm $STAR/*.vcf.*
 rm $HISAT2/*.vcf.*
