@@ -57,12 +57,12 @@ $ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdi
 ### Example
     - Paired-ends reads: 
 ```
-$ rnavariantcalling --ThreadsN 32 --reads 1.fastq.gz 2.fastq.gz -o /output/directory/
+$ rnavariantcalling.py --ThreadsN 32 --reads 1.fastq.gz 2.fastq.gz -o /output/directory/
 ```
 
     -Single-end read: 
 ```
-$ rnavariantcalling --ThreadsN 32 -U unpaired_read.fastq.gz -o /output/directory/
+$ rnavariantcalling.py --ThreadsN 32 -U unpaired_read.fastq.gz -o /output/directory/
 ```
 
 License
