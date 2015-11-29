@@ -2,6 +2,7 @@
 FPATH=`pwd`
 #popd > /dev/null
 
+export VIRTUAL_ENV=$FPATH/venv
 export SAMBAMBA=$FPATH/bin/sambamba_v0.5.9
 export TEMP=$FPATH/tmp
 export HISAT2out=$FPATH/HISAT2
