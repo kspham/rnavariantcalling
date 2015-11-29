@@ -105,7 +105,7 @@ export HISAT2REF=$FPATH/HISAT2ref/grch37
 export REF=$FPATH/lib/hg19.fa
 export FILTER=$FPATH/scripts/filter.sh
 export HISAT2_INDEXES=$HISAT2REF
-
+export HEADER=$FPATH/header
 export PATH=$PATH:$SRC:$FPATH/bin:$VCFTOOLS:$HISAT2
 
 mkdir $STARout
