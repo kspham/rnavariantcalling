@@ -1,1 +1,0 @@
-/home/mkolmogo/.local/lib/python2.7/locale.py
