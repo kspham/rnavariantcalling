@@ -61,13 +61,13 @@ def Variant_Calling(bam1, bam2, dir1, dir2, threads):
 		exeCommand(shellEscape(' '.join(["multithread.py","$REF", "freebayes", dir+"/"+bam, "$CHRO",threads, 
 dir+"/"])))
 
-def filter(out):
+def filter(output):
 	
 	exeCommand(shellEscape("mkdir $TEMP"))	
-	exeCommand(shellEscape("mkdir "+out))
+
 	#Stage 1
 	exeCommand(shellEscape(' '.join(["sh", "$FILTER", "vcftools", "$HISAT2out", "$STARout"])))
-	output = os.path.abspath(out)
+
 	#Stage 2 merging
 	listFile = os.listdir(TEMP)
 	os.chdir(TEMP)
@@ -100,7 +100,10 @@ if __name__ == '__main__':
 
 	for i in range(len(reads)):
 		reads[i] = os.path.abspath(reads[i])
-	
+
+	exeCommand(shellEscape("mkdir "+args.outdir))
+	output = os.path.abspath(args.outdir)
+
 	os.chdir(STARout)
 	STAR_mapping(reads, iszipped, args.ThreadsN, STARref)
 
@@ -109,5 +112,5 @@ if __name__ == '__main__':
 
 	Variant_Calling("Aligned.sortedByCoord.out.bam", "HISAT2.Aligned.sorted.bam", STARout, HISAT2out, args.ThreadsN)
 	
-	filter(args.outdir)
+	filter(output)
 
