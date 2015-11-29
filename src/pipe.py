@@ -21,9 +21,9 @@ def exeCommand(sCommand):
 
 ###Get all response data
 	for lineData in outData.splitlines():
-		if(self.RUNNING_DEBUG_FLAG == 1):
-			outStringData = str(lineData)
-			print("%s" % (outStringData))
+		#if(self.RUNNING_DEBUG_FLAG == 1):
+		outStringData = str(lineData)
+		print("%s" % (outStringData))
 ###If there is error
 	if((errData != None) and (len(errData) > 0)):
 		print("Command has error:{0}".format(errData))
@@ -36,7 +36,7 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
 	exeCommand(shellEscape(' '.join(["$STAR", "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
 		' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax", "500000", "--outFilterMismatchNmax", "10", 
 "--outSAMtype", "BAM", "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
-	exeCommand(shellEscape(' '.join(["samtools index", "Aligned.sortedByCoord.out.bam"])))
+	exeCommand(shellEscape(' '.join(["$SAMBAMBA index -t 32", "Aligned.sortedByCoord.out.bam"])))
 
 
 #Mapping with HISAT2
@@ -48,8 +48,9 @@ output])))
 		exeCommand(shellEscape(' '.join(["$HISAT2", "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
 "-S", output])))
 
-	exeCommand(shellEscape(' '.join(["samtools view -Sb", output, "| samtools sort -o -", output+".sorted"])))
-	exeCommand(shellEscape(' '.join(["samtools index", output+".sorted.bam"])))
+	exeCommand(shellEscape(' '.join(["$SAMBAMBA view -S -f bam -t 32", output, ">", output+".bam"])))
+	exeCommand(shellEscape(' '.join(["$SAMBAMBA sort -t 32","-o", output+".sorted.bam", output+".bam"]))) 
+	exeCommand(shellEscape(' '.join(["$SAMBAMBA index -t 32", output+".sorted.bam"])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
 	for bam, dir in [(bam1, dir1), (bam2, dir2)]:
