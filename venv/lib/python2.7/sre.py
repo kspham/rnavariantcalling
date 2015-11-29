@@ -1,1 +1,1 @@
-/usr/lib/python2.7/sre.py
+/home/kspham/usr/bin/lib/python2.7/sre.py

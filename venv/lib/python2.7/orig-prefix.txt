@@ -1,1 +1,1 @@
-/usr
+/home/kspham/usr/bin

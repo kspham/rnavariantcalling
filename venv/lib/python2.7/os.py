@@ -1,1 +1,1 @@
-/usr/lib/python2.7/os.py
+/home/kspham/usr/bin/lib/python2.7/os.py

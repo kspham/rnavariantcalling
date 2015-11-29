@@ -1,1 +1,1 @@
-/usr/lib/python2.7/locale.py
+/home/kspham/usr/bin/lib/python2.7/locale.py
