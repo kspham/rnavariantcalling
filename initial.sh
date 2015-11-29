@@ -25,7 +25,4 @@ gunzip Homo_sapiens.GRCh37.75.gtf.gz
 chmod +x $BIT2FA
 $BIT2FA hg19.2bit hg19.fa
 
-sed 's/chr//g' hg19.fa > Hg19.fa
-rm hg*
-
 
