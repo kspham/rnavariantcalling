@@ -39,11 +39,11 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-<<<<<<< HEAD
+#<<<<<<< HEAD
 VIRTUAL_ENV="/home/ptdtan/venv"
-=======
+#=======
 VIRTUAL_ENV="$PWD/venv"
->>>>>>> 380859c0b51d6a929286d1fa0b265ccc8a8ed9b9
+#>>>>>>> 380859c0b51d6a929286d1fa0b265ccc8a8ed9b9
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
