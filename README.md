@@ -51,7 +51,6 @@ Before you run the program please set the environment as follow:
 
 $ cd rnavariantcalling 
 $ source ./environment
-$ source venv/bin/activate
 
 $ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR]
 ```
