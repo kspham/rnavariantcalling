@@ -34,7 +34,7 @@ And also, rnavariantcalling need these tools below have to be installed on your 
 
 ### Installation
 ```
-1. $git clone --recursive https://github.com/kspham/rnavariantcalling.git
+1. $git clone https://github.com/kspham/rnavariantcalling.git
 2. $cd rnavariantcalling
 
 At the very first time you run rnavariantcalling, you have to download the indexed human genome for STAR Aligner and HISAT2 Aligner, and also the gene annotation of human genome.
@@ -51,7 +51,6 @@ Before you run the program please set the environment as follow:
 
 $ cd rnavariantcalling 
 $ source ./environment
-$ source venv/bin/activate
 
 $ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR]
 ```
