@@ -53,7 +53,7 @@ output])))
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA view -S -f bam -t 32", output, ">", output+".bam"])))
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA sort -t 32","-o", output+".sorted.bam", output+".bam"])))
 	#exeCommand(shellEscape(' '.join(["$SAMBAMBA view -H", output+".sorted.bam", "| sed 's/SN:/SN:chr/g' /dev/stdin > header"])))
-	exeCommand(shellEscape(' '.join(["samtools reheader $HEADER", output+".sorted.bam","> temp", "&& mv temp", output+".sorted.bam"])))
+	exeCommand(shellEscape(' '.join(["samtools reheader $CHRO", output+".sorted.bam","> temp", "&& mv temp", output+".sorted.bam"])))
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA index -t 32", output+".sorted.bam"])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
