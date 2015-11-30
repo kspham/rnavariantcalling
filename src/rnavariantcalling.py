@@ -51,9 +51,13 @@ output])))
 "-S", output])))
 
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA view -S -f bam -t 32", output, ">", output+".bam"])))
+	exeCommand(shellEscape(' '.join(["samtools reheader $HEADER", output+".bam","> temp", "&& mv temp", output+".bam"])))
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA sort -t 32","-o", output+".sorted.bam", output+".bam"])))
+<<<<<<< HEAD
+=======
 	#exeCommand(shellEscape(' '.join(["$SAMBAMBA view -H", output+".sorted.bam", "| sed 's/SN:/SN:chr/g' /dev/stdin > header"])))
-	exeCommand(shellEscape(' '.join(["samtools reheader $HEADER", output+".sorted.bam","> temp", "&& mv temp", output+".sorted.bam"])))
+	exeCommand(shellEscape(' '.join(["samtools reheader $CHRO", output+".sorted.bam","> temp", "&& mv temp", output+".sorted.bam"])))
+>>>>>>> 493dfeb08f681029f3a0b57ffcba9b92a5b47061
 	exeCommand(shellEscape(' '.join(["$SAMBAMBA index -t 32", output+".sorted.bam"])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
@@ -104,13 +108,13 @@ if __name__ == '__main__':
 	exeCommand(shellEscape("mkdir "+args.outdir))
 	output = os.path.abspath(args.outdir)
 
-	os.chdir(STARout)
+	"""os.chdir(STARout)
 	STAR_mapping(reads, iszipped, args.ThreadsN, STARref)
 
 	os.chdir(HISAT2out)
-	HISAT2_mapping(reads, args.ThreadsN,"HISAT2.Aligned", len(reads)>1)
+	HISAT2_mapping(reads, args.ThreadsN,"HISAT2.Aligned", len(reads)>1)"""
 
-	Variant_Calling("Aligned.sortedByCoord.out.bam", "HISAT2.Aligned.sorted.bam", STARout, HISAT2out, args.ThreadsN)
+	#Variant_Calling("Aligned.sortedByCoord.out.bam", "HISAT2.Aligned.sorted.bam", STARout, HISAT2out, args.ThreadsN)
 	
 	filter(output)
 
