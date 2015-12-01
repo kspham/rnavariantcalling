@@ -28,7 +28,7 @@ export REF=$FPATH/lib/hg19.fa
 export FILTER=$FPATH/scripts/filter.sh
 export HISAT2_INDEXES=$HISAT2REF
 export HEADER=$FPATH/header
-export PATH=$PATH:$SRC:$FPATH/bin:$VCFTOOLS:$HISAT2
+export PATH=$PATH:$SRC:$FPATH/bin:$VCFTOOLS:$HISAT2:$FPATH/bin/freebayes/bin:$FPATH/bin/freebayes/scripts
 
 mkdir $STARout
 mkdir $HISAT2out
