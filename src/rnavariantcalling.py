@@ -103,13 +103,13 @@ if __name__ == '__main__':
 	exeCommand(shellEscape("mkdir "+args.outdir))
 	output = os.path.abspath(args.outdir)
 
-	"""os.chdir(STARout)
+	os.chdir(STARout)
 	STAR_mapping(reads, iszipped, args.ThreadsN, STARref)
 
 	os.chdir(HISAT2out)
-	HISAT2_mapping(reads, args.ThreadsN,"HISAT2.Aligned", len(reads)>1)"""
+	HISAT2_mapping(reads, args.ThreadsN,"HISAT2.Aligned", len(reads)>1)
 
-	#Variant_Calling("Aligned.sortedByCoord.out.bam", "HISAT2.Aligned.sorted.bam", STARout, HISAT2out, args.ThreadsN)
+	Variant_Calling("Aligned.sortedByCoord.out.bam", "HISAT2.Aligned.sorted.bam", STARout, HISAT2out, args.ThreadsN)
 	
 	filter(output)
 
