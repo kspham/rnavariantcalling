@@ -1,3 +1,5 @@
 #!/bin/bash
 
 sed "s|path|$PWD|g" example.yaml > config.yaml
+mkdir STAR
+mkdir HISAT2
