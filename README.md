@@ -36,7 +36,8 @@ And also, rnavariantcalling need these tools below have to be installed on your 
 ```
 1. $git clone https://github.com/kspham/rnavariantcalling.git
 2. $cd rnavariantcalling
-
+3. $python setup.py install
+4. $./configure
 At the very first time you run rnavariantcalling, you have to download the indexed human genome for STAR Aligner and HISAT2 Aligner, and also the gene annotation of human genome.
 
 3. $./initial.sh
@@ -47,26 +48,22 @@ At the very first time you run rnavariantcalling, you have to download the index
 ### Usage 
 
 ```
-Before you run the program please set the environment as follow:
-
-$ cd rnavariantcalling 
-$ source ./environment
-
-$ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR]
+$ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR] --config yamlFile
 ```
     -h, --helps help message and exit 
     --reads READS [READS ...], -U READS [READS ...] Input RNA reads 
     ---outdir OUTDIR, -o OUTDIR Where the final result will be stored 
     --ThreadsN N Number of threads
+    --config yamlFile configuration file as yaml format
 ### Example
     - Paired-ends reads: 
 ```
-$ rnavariantcalling.py --ThreadsN 32 --reads 1.fastq.gz 2.fastq.gz -o /output/directory/
+$ rnavariantcalling.py --ThreadsN 32 --reads 1.fastq.gz 2.fastq.gz -o /output/directory/ --config /path/to/your/config.yaml
 ```
 
     -Single-end read: 
 ```
-$ rnavariantcalling.py --ThreadsN 32 -U unpaired_read.fastq.gz -o /output/directory/
+$ rnavariantcalling.py --ThreadsN 32 -U unpaired_read.fastq.gz -o /output/directory/ --config /path/to/your/config.yaml
 ```
 
 License
