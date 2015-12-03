@@ -1,0 +1,17 @@
+lib:
+ header: /home/ptdtan/rnavariantcalling/header
+ chro: /home/ptdtan/rnavariantcalling/lib/chr_coordinates.txt
+ editsite: /home/ptdtan/rnavariantcalling/lib/human_edit.txt
+ REF: /home/ptdtan/rnavariantcalling/lib/hg19.fa
+ STARref: /home/ptdtan/rnavariantcalling/STARref/out
+ HISAT2ref: /home/ptdtan/rnavariantcalling/HISAT2ref/grch37
+tools:
+ freebayes: /home/ptdtan/rnavariantcalling/bin/freebayes
+ STAR: /home/ptdtan/rnavariantcalling/bin/STAR
+ hisat2: /home/ptdtan/rnavariantcalling/bin/hisat2-2.0.1-beta/hisat2
+ vcftools: /home/ptdtan/rnavariantcalling/bin/vcftools_0.1.13/bin/vcftools
+ vcfmerge: /home/ptdtan/rnavariantcalling/bin/vcftools_0.1.13/bin/vcf-merge
+folder:
+ STARout: /home/ptdtan/rnavariantcalling/STARout
+ HISAT2out: /home/ptdtan/rnavariantcalling/HISAT2out
+ tmp: /home/ptdtan/rnavariantcalling/tmp

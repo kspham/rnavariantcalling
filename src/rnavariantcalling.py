@@ -5,15 +5,8 @@
 import os,sys
 import argparse
 import subprocess
+import yaml
 
-
-TEMP=os.environ["TEMP"]
-STARout =os.environ["STARout"]
-HISAT2out = os.environ["HISAT2out"]
-STARref =os.environ["STARREF"]
-HISAT2ref=os.environ["HISAT2REF"]
-REF =os.environ["REF"]
-SRC = os.environ["SRC"]
 
 #How to execute a command
 def exeCommand(sCommand):
@@ -35,37 +28,36 @@ def shellEscape(s):
 
 #Mapping with STAR	
 def STAR_mapping(reads, ReadIsGzipped, N, dir):
-	exeCommand(shellEscape(' '.join(["STAR", "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
+	exeCommand(shellEscape(' '.join([STAR, "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
 		' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax", "500000", "--outFilterMismatchNmax", "10", 
 "--outSAMtype", "BAM", "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
-	exeCommand(shellEscape(' '.join(["$SAMBAMBA index -t 32", "Aligned.sortedByCoord.out.bam"])))
+	exeCommand(shellEscape(' '.join([SAMBAMBA,"index -t 32", "Aligned.sortedByCoord.out.bam"])))
 
 
 #Mapping with HISAT2
 def HISAT2_mapping(reads, N, output, pairend):
 	if pairend:
-		exeCommand(shellEscape(' '.join(["hisat2", "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S", 
+		exeCommand(shellEscape(' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S", 
 output])))
 	else:
-		exeCommand(shellEscape(' '.join(["hisat2", "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
+		exeCommand(shellEscape(' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
 "-S", output])))
 
-	exeCommand(shellEscape(' '.join(["$SAMBAMBA view -S -f bam -t 32", output, ">", output+".bam"])))
+	exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t 32", output, ">", output+".bam"])))
 	exeCommand(shellEscape(' '.join(["samtools reheader $HEADER", output+".bam","> temp", "&& mv temp", output+".bam"])))
-	exeCommand(shellEscape(' '.join(["$SAMBAMBA sort -t 32","-o", output+".sorted.bam", output+".bam"])))
-	exeCommand(shellEscape(' '.join(["$SAMBAMBA index -t 32", output+".sorted.bam"])))
+	exeCommand(shellEscape(' '.join([SAMBAMBA,"sort -t 32","-o", output+".sorted.bam", output+".bam"])))
+	exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t 32", output+".sorted.bam"])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
 	for bam, dir in [(bam1, dir1), (bam2, dir2)]:
-		exeCommand(shellEscape(' '.join(["multithread.py","$REF", "freebayes", dir+"/"+bam, "$CHRO",threads, 
-dir+"/"])))
+		exeCommand(shellEscape(' '.join(["multithread.py",REF, freebayes, dir+"/"+bam, "$CHRO",threads, dir+"/"])))
 
 def filter(output):
 	
 	exeCommand(shellEscape("mkdir $TEMP"))	
 
 	#Stage 1
-	exeCommand(shellEscape(' '.join(["sh", "$FILTER", "vcftools", "$HISAT2out", "$STARout"])))
+	exeCommand(shellEscape(' '.join(["sh", FILTER, vcftools, HISAT2out, STARout])))
 
 	#Stage 2 merging
 	listFile = os.listdir(TEMP)
@@ -73,14 +65,14 @@ def filter(output):
 	for f in listFile:
 		exeCommand(shellEscape(' '.join(["bgzip -c", f, ">", f+".gz"])))
 		exeCommand(shellEscape(' '.join(["tabix -p", "vcf", f+".gz"])))
-	exeCommand(shellEscape(' '.join(["vcf-merge", ' '.join([f+".gz" for f in listFile]), "| bgzip -c >", "human_variant.vcf.gz"])))
+	exeCommand(shellEscape(' '.join([vcfmerge, ' '.join([f+".gz" for f in listFile]), "| bgzip -c >", "human_variant.vcf.gz"])))
 
 	#Stage 3
-	exeCommand(shellEscape(' '.join(["vcftools", "--gzvcf","human_variant.vcf.gz", "--exclude-positions","$LIB/human_edit.txt", 
+	exeCommand(shellEscape(' '.join([vcftools, "--gzvcf","human_variant.vcf.gz", "--exclude-positions","$LIB/human_edit.txt", 
 "--recode","--recode-INFO-all", "--out", "final"])))
 	
 	exeCommand(shellEscape("mv final.recode.vcf "+output))
-	exeCommand(shellEscape("rm -fr $TEMP"))
+	exeCommand(shellEscape("rm -fr "+TEMP))
 
 if __name__ == '__main__':
 
@@ -88,7 +80,26 @@ if __name__ == '__main__':
 	parser.add_argument('--reads', '-U', type=str,help='Input RNA reads paired or unpaired', nargs='+', required=True)
 	parser.add_argument('--outdir', '-o',type=str, help='Where the final result will be stored')
 	parser.add_argument('--ThreadsN', metavar='N', type=str, help='Number of threads', default='4')
+	parser.add_argument('--config', metavar='yamlFile', type=str, help='Config file as yaml format', required=True) 
 	args=parser.parse_args()
+
+# Parse yaml file:
+	with open(args.config, "r") as ymlfile:
+        	cfg=yaml.load(ymlfile)
+
+	TEMP= cfg['folder']['tmp']
+	STARout = cfg['folder']['STARout']
+	HISAT2out = cfg['folder']['STARout']
+	STARref = cfg['lib']['STARref']
+	HISAT2ref= cfg['lib']['HISAT2ref']
+	REF = cfg['lib']['REF']
+	CHRO = cfg['lib']['chro']
+	STAR= cfg['tools']['STAR']
+	hisat2= cfg['tools']['hisat2']
+	vcftools=cfg['tools']['vcftools']
+	vcfmerge=cfg['tools']['vcfmerge']
+	freebayes=cfg['tools']['freebayes']
+	SAMBAMBA= cfg['tools']['sambamba']
 
 	reads = args.reads
 
