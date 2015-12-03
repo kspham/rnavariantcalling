@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sed -i "s|path|$PWD|g" config.yaml  
+sed "s|path|$PWD|g" example.yaml > config.yaml
 cp src/* /usr/bin
