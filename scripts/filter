@@ -6,8 +6,7 @@ IFS='
 VCFTOOLS=$1
 HISAT2=$2
 STAR=$3
-EDITINGSITES=$4
-
+TEMP=$4
 for f in $HISAT2/*.vcf; do
 	bgzip -c $f > $f.gz
 	tabix -p vcf $f.gz

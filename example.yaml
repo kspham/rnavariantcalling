@@ -5,6 +5,7 @@ lib:
  REF: path/lib/hg19.fa
  STARref: path/STARref/out
  HISAT2ref: path/HISAT2ref/grch37
+ PERL5LIB: path/bin/vcftools_0.1.13/perl
 tools:
  freebayes: path/bin/freebayes
  STAR: path/bin/STAR

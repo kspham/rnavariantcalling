@@ -57,7 +57,7 @@ def filter(output):
 	exeCommand(shellEscape("mkdir "+TEMP))	
 
 	#Stage 1
-	exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout])))
+	exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP])))
 
 	#Stage 2 merging
 	listFile = os.listdir(TEMP)
@@ -100,9 +100,11 @@ if __name__ == '__main__':
 	freebayes=cfg['tools']['freebayes']
 	SAMBAMBA= cfg['tools']['sambamba']
 	editsite=cfg['lib']['editsite']
+	perl=cfg['lib']['PERL5LIB']
 	reads = args.reads
 	
 	os.environ['HISAT2_INDEXES']=HISAT2ref
+	os.environ['PERL5LIB']=perl
 	if '.gz' in reads[0]:
 		iszipped = True
 	else:
