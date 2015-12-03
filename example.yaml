@@ -11,6 +11,7 @@ tools:
  hisat2: path/bin/hisat2-2.0.1-beta/hisat2
  vcftools: path/bin/vcftools_0.1.13/bin/vcftools
  vcfmerge: path/bin/vcftools_0.1.13/bin/vcf-merge
+ sambamba: path/bin/sambamba_v0.5.9
 folder:
  STARout: path/STAR
  HISAT2out: path/HISAT2
