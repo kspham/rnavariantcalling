@@ -37,7 +37,7 @@ And also, rnavariantcalling need these tools below have to be installed on your 
 1. $git clone https://github.com/kspham/rnavariantcalling.git
 2. $cd rnavariantcalling
 3. $python setup.py install
-4. $./configure
+4. $./configure (generate config.yaml)
 At the very first time you run rnavariantcalling, you have to download the indexed human genome for STAR Aligner and HISAT2 Aligner, and also the gene annotation of human genome.
 
 3. $./initial.sh
