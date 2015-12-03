@@ -44,17 +44,17 @@ output])))
 "-S", output])))
 
 	exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t 32", output, ">", output+".bam"])))
-	exeCommand(shellEscape(' '.join(["samtools reheader $HEADER", output+".bam","> temp", "&& mv temp", output+".bam"])))
+	exeCommand(shellEscape(' '.join(["samtools reheader",header, output+".bam","> temp", "&& mv temp", output+".bam"])))
 	exeCommand(shellEscape(' '.join([SAMBAMBA,"sort -t 32","-o", output+".sorted.bam", output+".bam"])))
 	exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t 32", output+".sorted.bam"])))
  
 def Variant_Calling(bam1, bam2, dir1, dir2, threads):
 	for bam, dir in [(bam1, dir1), (bam2, dir2)]:
-		exeCommand(shellEscape(' '.join(["multithread.py",REF, freebayes, dir+"/"+bam, "$CHRO",threads, dir+"/"])))
+		exeCommand(shellEscape(' '.join(["multithread.py",REF, freebayes, dir+"/"+bam, CHRO,threads, dir+"/"])))
 
 def filter(output):
 	
-	exeCommand(shellEscape("mkdir $TEMP"))	
+	exeCommand(shellEscape("mkdir "+TEMP))	
 
 	#Stage 1
 	exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout])))
@@ -68,8 +68,7 @@ def filter(output):
 	exeCommand(shellEscape(' '.join([vcfmerge, ' '.join([f+".gz" for f in listFile]), "| bgzip -c >", "human_variant.vcf.gz"])))
 
 	#Stage 3
-	exeCommand(shellEscape(' '.join([vcftools, "--gzvcf","human_variant.vcf.gz", "--exclude-positions","$LIB/human_edit.txt", 
-"--recode","--recode-INFO-all", "--out", "final"])))
+	exeCommand(shellEscape(' '.join([vcftools, "--gzvcf","human_variant.vcf.gz", "--exclude-positions",editsite,"--recode","--recode-INFO-all", "--out", "final"])))
 	
 	exeCommand(shellEscape("mv final.recode.vcf "+output))
 	exeCommand(shellEscape("rm -fr "+TEMP))
@@ -83,13 +82,13 @@ if __name__ == '__main__':
 	parser.add_argument('--config', metavar='yamlFile', type=str, help='Config file as yaml format', required=True) 
 	args=parser.parse_args()
 
-# Parse yaml file:
+	#Parse yaml file:
 	with open(args.config, "r") as ymlfile:
         	cfg=yaml.load(ymlfile)
-
+	header = cfg['lib']['header']
 	TEMP= cfg['folder']['tmp']
 	STARout = cfg['folder']['STARout']
-	HISAT2out = cfg['folder']['STARout']
+	HISAT2out = cfg['folder']['HISAT2out']
 	STARref = cfg['lib']['STARref']
 	HISAT2ref= cfg['lib']['HISAT2ref']
 	REF = cfg['lib']['REF']
@@ -100,9 +99,10 @@ if __name__ == '__main__':
 	vcfmerge=cfg['tools']['vcfmerge']
 	freebayes=cfg['tools']['freebayes']
 	SAMBAMBA= cfg['tools']['sambamba']
-
+	editsite=cfg['lib']['editsite']
 	reads = args.reads
-
+	
+	os.environ['HISAT2_INDEXES']=HISAT2ref
 	if '.gz' in reads[0]:
 		iszipped = True
 	else:
