@@ -57,7 +57,7 @@ def filter(output):
 	exeCommand(shellEscape("mkdir $TEMP"))	
 
 	#Stage 1
-	exeCommand(shellEscape(' '.join(["sh", FILTER, vcftools, HISAT2out, STARout])))
+	exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout])))
 
 	#Stage 2 merging
 	listFile = os.listdir(TEMP)
