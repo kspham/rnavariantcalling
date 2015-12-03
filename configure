@@ -1,3 +1,4 @@
 #!/bin/bash
 
 sed -i "s|path|$PWD|g" config.yaml  
+cp src/* /usr/bin
