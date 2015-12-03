@@ -9,6 +9,6 @@ setup(name='rnavariantcalling',
       license='MIT',
       packages=['rnavariantcalling'],
       
-      install_requireds=['pyyaml'],
+      install_requires=['pyyaml'],
       scripts=['src/multithread.py', 'src/rnavariantcalling.py', 'scripts/filter'],
       zip_safe=False)
