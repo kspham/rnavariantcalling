@@ -1,0 +1,26 @@
+#!/bin/bash
+
+IFS='
+'
+
+VCFTOOLS=$1
+VCFCONCAT=$2
+TEMP=$3
+UNAME=$4
+OUTPUT=$5
+EDITSITE=$6
+
+cd $TEMP
+for f in $TEMP/*.recode.vcf; do
+	bgzip -c $f > $f.gz
+	tabix -p vcf $f.gz
+done
+
+ls $TEMP/*.vcf.gz > lsfile 
+
+$VCFCONCAT -f lsfile | bgzip -c > temp.vcf.gz
+$VCFTOOLS --gzvcf temp.vcf.gz --exclude-positions $EDITSITE --recode --recode-INFO-all --out $UNAME
+mv $UNAME.recode.vcf $OUTPUT
+
+
+

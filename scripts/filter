@@ -27,8 +27,7 @@ for f in $STAR/*.vcf.gz; do
 	$VCFTOOLS --gzvcf $f --positions $f.common --recode --recode-INFO-all --out "${f%.*}"
 done
 
-mv $STARout/*recode* $TEMP
+mv $STAR/*recode* $TEMP
 
 rm $STAR/*.vcf.*
 rm $HISAT2/*.vcf.*
-
