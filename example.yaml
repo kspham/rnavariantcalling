@@ -17,3 +17,4 @@ folder:
  STARout: path/STAR/
  HISAT2out: path/HISAT2/
  tmp: path/tmp/
+ temporary: path/temporary/

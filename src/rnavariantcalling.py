@@ -8,6 +8,7 @@ import subprocess
 import yaml
 import uuid
 import random
+import hashlib
 
 #How to execute a command
 def exeCommand(sCommand):
@@ -29,14 +30,15 @@ def shellEscape(s):
 
 #Mapping with STAR	
 def STAR_mapping(reads, ReadIsGzipped, N, dir):
+	os.chdir(STARout)
 	exeCommand(shellEscape(' '.join([STAR, "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
 		' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax", "500000", "--outFilterMismatchNmax", "10", 
 "--outSAMtype", "BAM", "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
-	exeCommand(shellEscape(' '.join([SAMBAMBA,"index -t",N, "Aligned.sortedByCoord.out.bam"])))
 
 
 #Mapping with HISAT2
 def HISAT2_mapping(reads, N, output, pairend):
+	os.chdir(HISAT2out)
 	if pairend:
 		exeCommand(shellEscape(' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S", 
 output])))
@@ -44,20 +46,26 @@ output])))
 		exeCommand(shellEscape(' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
 "-S", output])))
 
-	exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", output+".bam"])))
-	exeCommand(shellEscape(' '.join(["samtools reheader",header, output+".bam","> temp", "&& mv temp", output+".bam"])))
-	exeCommand(shellEscape(' '.join([SAMBAMBA,"sort -t",N,"-o", output+".sorted.bam", output+".bam"])))
-	exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t",N, output+".sorted.bam"])))
- 
-def Variant_Calling(bam1, bam2, dir1, dir2, threads):
-	for bam, dir in [(bam1, dir1), (bam2, dir2)]:
-		exeCommand(shellEscape(' '.join(["multithread.py",REF, freebayes, dir+"/"+bam, CHRO,threads, dir+"/"])))
+def Variant_Calling(bam, dir, threads):
+	exeCommand(shellEscape(' '.join(["multithread.py",REF, freebayes, dir+"/"+bam, CHRO,threads, dir+"/"])))
 
 def filter(output):	
 	#Stage 1
 	exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP])))
 	#Stage 2
 	exeCommand(shellEscape(' '.join(["filter2", vcftools, vcfconcat,TEMP, uname, output, editsite])))
+
+def ParsingBAM(N):
+	#Index Aligned.sortByCoord.out.bam
+	os.chdir(STARout)
+	exeCommand(shellEscape(' '.join([SAMBAMBA,"index -t",N, "Aligned.sortedByCoord.out.bam"])))
+	#Reheader and sort, index HISAT2.Aligned
+	os.chdir(HISAT2out)
+	output="HISAT2.Aligned"
+	exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", output+".bam"])))
+        exeCommand(shellEscape(' '.join(["samtools reheader",header, output+".bam","> temp", "&& mv temp", output+".bam"])))
+        exeCommand(shellEscape(' '.join([SAMBAMBA,"sort -t",N,"-o", output+".sorted.bam", output+".bam"])))
+        exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t",N, output+".sorted.bam"])))
 
 if __name__ == '__main__':
 
@@ -73,6 +81,7 @@ if __name__ == '__main__':
         	cfg=yaml.load(ymlfile)
 	header = cfg['lib']['header']
 	TEMP= cfg['folder']['tmp']
+	temporary=cfg['folder']['temporary']
 	STARout = cfg['folder']['STARout']
 	HISAT2out = cfg['folder']['HISAT2out']
 	STARref = cfg['lib']['STARref']
@@ -92,7 +101,7 @@ if __name__ == '__main__':
 	os.environ['PERL5LIB']=perl
 
         reads = args.reads
-
+	print reads
 	if '.gz' in reads[0]:
 		iszipped = True
 	else:
@@ -101,34 +110,57 @@ if __name__ == '__main__':
 	for i in range(len(reads)):
 		reads[i] = os.path.abspath(reads[i])
 
-	exeCommand(shellEscape("mkdir "+args.outdir))
-	output = os.path.abspath(args.outdir)
+	if args.outdir:
+		output = os.path.abspath(args.outdir)
+	else:
+		output = os.path.abspath(os.environ['PWD'])
+	os.mkdir(output)
 
 	# Generate UUID
 
-	id=uuid.uuid1()
-	uname = str(id.time + random.randint(1000,9999))
+	uname = hashlib.md5(reads[0]).hexdigest()
 
 	#Main program
 
 	TEMP+=uname
 	STARout+=uname
 	HISAT2out+=uname
-	
+	job=temporary+uname
+
 	os.makedirs(TEMP)	
 	os.makedirs(STARout)
 	os.makedirs(HISAT2out)
+	command = {}
+	
+	command[1] = [STAR_mapping,[reads, iszipped, args.ThreadsN, STARref]]
 
-	os.chdir(STARout)
-	STAR_mapping(reads, iszipped, args.ThreadsN, STARref)
+	command[2]=[HISAT2_mapping,[reads, args.ThreadsN,"HISAT2.Aligned", len(reads)>1]]
 
-	os.chdir(HISAT2out)
-	HISAT2_mapping(reads, args.ThreadsN,"HISAT2.Aligned", len(reads)>1)
+	command[3]=[ParsingBAM,[args.ThreadsN]]	
 
-	Variant_Calling("Aligned.sortedByCoord.out.bam", "HISAT2.Aligned.sorted.bam", STARout, HISAT2out, args.ThreadsN)
+	command[4]=[Variant_Calling,["Aligned.sortedByCoord.out.bam", STARout, args.ThreadsN]]
 
-	filter(output)
+	command[5]=[Variant_Calling,["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
 
+	command[6]=[filter,[output]]
+
+	# Initial steps
+	stepsDone = {}
+	for i in range(1,7):
+		stepsDone[i] = "False"
+
+	# Get done steps
+	steps = open(job,"a")
+	for line in steps:
+		l = line.split()
+		stepsDone[int(l[0])] = l[1]
+
+	for step in range (1,7):
+		if stepsDone[step] == "False":
+			params = command[step][1]
+			command[step][0](*params)
+			steps.write(str(step)+"\t"+"True\n")
+	
 	print "Sucessfully!", "Job name: "+uname, "File name: "+uname+".recode.vcf"
 
 	os.rmdir(TEMP)
