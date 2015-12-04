@@ -51,7 +51,6 @@ class ThreadPool:
 
 def call(chr, len):
         os.system(' '.join([BAYES, "-f", REF, "-C 5", "-r", chr+":0.."+len,BAM, ">", DIR+chr+".vcf"]))
-	print "Done", chr, "with length:", len
 
 if __name__ == '__main__':
 	
