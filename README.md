@@ -48,7 +48,7 @@ At the very first time you run rnavariantcalling, you have to download the index
 ### Usage 
 
 ```
-$ rnavariantcalling [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR] --config yamlFile
+$ rnavariantcalling.py [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR] --config yamlFile
 ```
     -h, --helps help message and exit 
     --reads READS [READS ...], -U READS [READS ...] Input RNA reads 
