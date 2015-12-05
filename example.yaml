@@ -13,6 +13,7 @@ tools:
  vcftools: path/bin/vcftools_0.1.13/bin/vcftools
  vcfconcat: path/bin/vcftools_0.1.13/bin/vcf-concat
  sambamba: path/bin/sambamba_v0.5.9
+ snpeff: path/bin/snpEff
 folder:
  STARout: path/STAR/
  HISAT2out: path/HISAT2/

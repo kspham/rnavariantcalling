@@ -9,6 +9,8 @@ import yaml
 import uuid
 import random
 import hashlib
+import logging
+import logging.handlers
 
 #How to execute a command
 def exeCommand(sCommand):
@@ -34,7 +36,7 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
 	exeCommand(shellEscape(' '.join([STAR, "--runThreadN",N, "--genomeDir", dir, "--readFilesIn", 
 		' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax", "500000", "--outFilterMismatchNmax", "10", 
 "--outSAMtype", "BAM", "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
-
+	oLogger.debug("Done aligment with STAR")
 
 #Mapping with HISAT2
 def HISAT2_mapping(reads, N, output, pairend):
@@ -45,27 +47,42 @@ output])))
 	else:
 		exeCommand(shellEscape(' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]), 
 "-S", output])))
+	oLogger.debug("Done aligment with HISAT2")
 
 def Variant_Calling(bam, dir, threads):
 	exeCommand(shellEscape(' '.join(["multithread.py",REF, freebayes, dir+"/"+bam, CHRO,threads, dir+"/"])))
+	oLogger.debug("Done calling variant for:"+bam)
 
-def filter(output):	
-	#Stage 1
+def filter1():	
 	exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP])))
-	#Stage 2
+	oLogger.debug("Done filtering stage 1")
+
+def filter2():
 	exeCommand(shellEscape(' '.join(["filter2", vcftools, vcfconcat,TEMP, uname, output, editsite])))
+	oLogger.debug("Done filtering stage 2")
+
+def snpEff():
+	os.chdir(snpeff)
+	exeCommand(' '.join(["java","-Xms2G","-Xmx4G","-jar", "snpEff.jar", 
+"GRCh37.75",output+"/"+uname+".recode.vcf",">",output+"/"+uname+"ann.vcf"]))
+	oLogger.debug("Done annotation!")
 
 def ParsingBAM(N):
 	#Index Aligned.sortByCoord.out.bam
 	os.chdir(STARout)
 	exeCommand(shellEscape(' '.join([SAMBAMBA,"index -t",N, "Aligned.sortedByCoord.out.bam"])))
+	oLogger.debug("Indexed:Aligned.sortByCoord.out.bam")
 	#Reheader and sort, index HISAT2.Aligned
 	os.chdir(HISAT2out)
 	output="HISAT2.Aligned"
 	exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", output+".bam"])))
+	oLogger.debug("Convert %s to %s" %(output, output+".bam"))
         exeCommand(shellEscape(' '.join(["samtools reheader",header, output+".bam","> temp", "&& mv temp", output+".bam"])))
+	oLogger.debug("Reheader BAM file")
         exeCommand(shellEscape(' '.join([SAMBAMBA,"sort -t",N,"-o", output+".sorted.bam", output+".bam"])))
+	oLogger.debug("Sort %s" %(output+".bam"))
         exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t",N, output+".sorted.bam"])))
+	oLogger.debug("Indexed: %s" %(output+"sorted.bam.bai"))
 
 if __name__ == '__main__':
 
@@ -94,29 +111,43 @@ if __name__ == '__main__':
 	vcfconcat=cfg['tools']['vcfconcat']
 	freebayes=cfg['tools']['freebayes']
 	SAMBAMBA= cfg['tools']['sambamba']
+	snpeff=cfg['tools']['snpeff']
 	editsite=cfg['lib']['editsite']
 	perl=cfg['lib']['PERL5LIB']
 	
 	os.environ['HISAT2_INDEXES']=HISAT2ref
 	os.environ['PERL5LIB']=perl
 
+        #Get reads abs path
         reads = args.reads
-	if '.gz' in reads[0]:
-		iszipped = True
-	else:
-		iszipped = False
+        if '.gz' in reads[0]:
+                iszipped = True
+        else:
+             	iszipped = False
 
-	for i in range(len(reads)):
-		reads[i] = os.path.abspath(reads[i])
+        for i in range(len(reads)):
+                reads[i] = os.path.abspath(reads[i])
 
-	if args.outdir:
-		output = os.path.abspath(args.outdir)
-	else:
-		output = os.path.abspath(os.environ['PWD'])
+        # Generate job name
+        uname = hashlib.md5(reads[0]).hexdigest()
 
-	# Generate UUID
+	#Initial Logging
 
-	uname = hashlib.md5(reads[0]).hexdigest()
+        oLogger=logging.getLogger("RNAvariantcalling")
+        oLogger.setLevel(logging.DEBUG)
+        oLoggerHandler=logging.handlers.RotatingFileHandler("./"+uname+".log",maxBytes=10485760, backupCount=10)
+	oFormatter=logging.Formatter("%(levelname)s:[%(asctime)s]-[%(filename)s at line (%(lineno)d) of (%(funcName)s) function]-[%(message)s]")
+	oLoggerHandler.setFormatter(oFormatter)
+	oLogger.addHandler(oLoggerHandler)
+
+	oLogger.debug("Job name as MD5 hash of file name:"+uname)
+	oLogger.debug("Reads input: "+str(reads))
+
+	# Get output directory
+        if args.outdir:
+                output = os.path.abspath(args.outdir)
+        else:
+                output = os.path.abspath(os.environ['PWD'])
 
 	#Main program
 
@@ -124,14 +155,18 @@ if __name__ == '__main__':
 	STARout+=uname
 	HISAT2out+=uname
 	job=temporary+uname
-
+	final=output+"/"+uname+".recode.vcf"
 	try:
 		os.makedirs(TEMP)	
 		os.makedirs(STARout)
 		os.makedirs(HISAT2out)
+	except OSError:
+		pass
+	try:
 		os.makedirs(output)
 	except OSError:
 		pass
+	oLogger.debug("Making TEMP STARout and HISAT2out directories"+"%s\n%s\n%s\n%s"%(TEMP,STARout,HISAT2out, output))
 
 	command = {}
 	
@@ -145,12 +180,19 @@ if __name__ == '__main__':
 
 	command[5]=[Variant_Calling,["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
 
-	command[6]=[filter,[output]]
+	command[6]=[filter1,[]]
+
+	command[7]=[filter2,[]]
+
+	command[8]=[snpEff,[]]
 	
+	oLogger.debug("Setup commands")
+
 	# Initial steps
 	stepsDone = {}
-	for i in range(1,7):
+	for i in range(1,9):
 		stepsDone[i] = "False"
+	oLogger.debug("Setup tasks pool")
 
 	# Get done steps
 	try:
@@ -160,15 +202,13 @@ if __name__ == '__main__':
 			stepsDone[int(l[0])] = l[1]
 	except IOError:
 		steps = open(job,"w")
+	
+	oLogger.debug("Get job status" + str(stepsDone))
 
-	for step in range (1,7):
+	for step in range (1,9):
 		if stepsDone[step] == "False":
 			params = command[step][1]
 			command[step][0](*params)
 			steps.write(str(step)+"\t"+"True\n")
 	steps.close()
-	print "Sucessfully!", "Job name: "+uname, "File name: "+uname+".recode.vcf"
-
-	os.rmdir(TEMP)
-	os.rmdir(STARout)
-	os.rmdir(HISAT2out)
+	oLogger.debug("Sucessfully! "+"Job name: "+uname+" File name: "+uname+".recode.vcf")

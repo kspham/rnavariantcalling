@@ -15,8 +15,11 @@ for f in $TEMP/*.recode.vcf; do
 	bgzip -c $f > $f.gz
 	tabix -p vcf $f.gz
 done
+if [ -f $TEMP/temp.vcf.gz ]; then
+	rm $TEMP/temp.vcf.gz
+fi
 
-ls $TEMP/*.vcf.gz > lsfile 
+ls $TEMP/*.recode.vcf.gz > lsfile 
 
 $VCFCONCAT -f lsfile | bgzip -c > temp.vcf.gz
 $VCFTOOLS --gzvcf temp.vcf.gz --exclude-positions $EDITSITE --recode --recode-INFO-all --out $UNAME
