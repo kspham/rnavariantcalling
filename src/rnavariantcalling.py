@@ -153,17 +153,20 @@ if __name__ == '__main__':
 		stepsDone[i] = "False"
 
 	# Get done steps
-	steps = open(job,"r+")
-	for line in steps:
-		l = line.split()
-		stepsDone[int(l[0])] = l[1]
+	try:
+		steps = open(job,"r+")
+		for line in steps:
+			l = line.split()
+			stepsDone[int(l[0])] = l[1]
+	except IOError:
+		steps = open(job,"w")
 
 	for step in range (1,7):
 		if stepsDone[step] == "False":
 			params = command[step][1]
 			command[step][0](*params)
 			steps.write(str(step)+"\t"+"True\n")
-	
+	steps.close()
 	print "Sucessfully!", "Job name: "+uname, "File name: "+uname+".recode.vcf"
 
 	os.rmdir(TEMP)
