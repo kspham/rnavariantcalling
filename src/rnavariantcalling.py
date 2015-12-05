@@ -101,7 +101,6 @@ if __name__ == '__main__':
 	os.environ['PERL5LIB']=perl
 
         reads = args.reads
-	print reads
 	if '.gz' in reads[0]:
 		iszipped = True
 	else:
@@ -114,7 +113,6 @@ if __name__ == '__main__':
 		output = os.path.abspath(args.outdir)
 	else:
 		output = os.path.abspath(os.environ['PWD'])
-	os.mkdir(output)
 
 	# Generate UUID
 
@@ -127,9 +125,14 @@ if __name__ == '__main__':
 	HISAT2out+=uname
 	job=temporary+uname
 
-	os.makedirs(TEMP)	
-	os.makedirs(STARout)
-	os.makedirs(HISAT2out)
+	try:
+		os.makedirs(TEMP)	
+		os.makedirs(STARout)
+		os.makedirs(HISAT2out)
+		os.makedirs(output)
+	except OSError:
+		pass
+
 	command = {}
 	
 	command[1] = [STAR_mapping,[reads, iszipped, args.ThreadsN, STARref]]
@@ -143,14 +146,14 @@ if __name__ == '__main__':
 	command[5]=[Variant_Calling,["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
 
 	command[6]=[filter,[output]]
-
+	
 	# Initial steps
 	stepsDone = {}
 	for i in range(1,7):
 		stepsDone[i] = "False"
 
 	# Get done steps
-	steps = open(job,"a")
+	steps = open(job,"r+")
 	for line in steps:
 		l = line.split()
 		stepsDone[int(l[0])] = l[1]

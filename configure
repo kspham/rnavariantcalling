@@ -1,4 +1,4 @@
 #!/bin/bash
 
 sed "s|path|$PWD|g" example.yaml > config.yaml
-mkdir STAR HISAT2 tmp
+mkdir STAR HISAT2 tmp temporary
