@@ -63,7 +63,7 @@ def filter2():
 
 def snpEff():
 	os.chdir(snpeff)
-	exeCommand(' '.join(["java","-d64","-Xms2G","-Xmx8G","-jar", "snpEff.jar", 
+	exeCommand(' '.join(["java","-d64","-Xms2G","-Xmx10G","-jar", "snpEff.jar", 
 "GRCh37.75",output+"/"+uname+".recode.vcf",">",output+"/"+uname+"ann.vcf"]))
 	oLogger.debug("Done annotation!")
 
