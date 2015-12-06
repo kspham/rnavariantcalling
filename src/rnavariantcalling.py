@@ -12,6 +12,12 @@ import hashlib
 import logging
 import logging.handlers
 
+#MD5 function
+def MD5string(self,strData):
+	m=hashlib.md5()
+	m.update(strData.encode('UTF-8'))
+	return m.hexdigest()
+	
 #How to execute a command
 def exeCommand(sCommand):
 
@@ -129,7 +135,7 @@ if __name__ == '__main__':
                 reads[i] = os.path.abspath(reads[i])
 
         # Generate job name
-        uname = hashlib.md5(reads[0]).hexdigest()
+        uname = MD5string(reads[0])
 
 	#Initial Logging
 
