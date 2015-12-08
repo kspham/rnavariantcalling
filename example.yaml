@@ -6,6 +6,8 @@ lib:
  STARref: path/STARref/out
  HISAT2ref: path/HISAT2ref/grch37
  PERL5LIB: path/bin/vcftools_0.1.13/perl
+ vcfdatabase: path/lib/All_20151104.vcf.gz
+ vcfdatabase_index: path/lib/All_20151104.vcf.gz.tbi
 tools:
  freebayes: path/bin/freebayes
  STAR: path/bin/STAR
@@ -13,7 +15,9 @@ tools:
  vcftools: path/bin/vcftools_0.1.13/bin/vcftools
  vcfconcat: path/bin/vcftools_0.1.13/bin/vcf-concat
  sambamba: path/bin/sambamba_v0.5.9
- snpeff: path/bin/snpEff
+ snpeff: path/bin/snpEff/snpEff.jar
+ snpsift: path/bin/snpEff/SnpSift.jar
+ java: path/bin/jre1.8.0_66/bin/java
 folder:
  STARout: path/STAR/
  HISAT2out: path/HISAT2/

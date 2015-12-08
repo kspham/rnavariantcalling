@@ -13,7 +13,7 @@ import logging
 import logging.handlers
 
 #MD5 function
-def MD5string(self,strData):
+def MD5string(strData):
 	m=hashlib.md5()
 	m.update(strData.encode('UTF-8'))
 	return m.hexdigest()
@@ -68,10 +68,17 @@ def filter2():
 	oLogger.debug("Done filtering stage 2")
 
 def snpEff():
-	os.chdir(snpeff)
-	exeCommand(' '.join(["java","-d64","-Xms2G","-Xmx10G","-jar", "snpEff.jar", 
-"GRCh37.75",output+"/"+uname+".recode.vcf",">",output+"/"+uname+"ann.vcf"]))
+	os.chdir(output)
+	exeCommand(' '.join([java,"-Xmx10g","-jar", SnpEff, "-v",
+"GRCh37.75",uname+".recode.vcf",">",uname+"ann.vcf"]))
 	oLogger.debug("Done annotation!")
+
+def snpSift():
+	os.chdir(output)
+	exeCommand(' '.join(["sed 's/^chr//'",uname+"ann.vcf",">","tmp","&& mv tmp",uname+"ann.vcf"]))
+	exeCommand(' '.join([java,"-jar", SnpSift, "annotate", "-id",
+vcfdatabase,uname+"ann.vcf",">",uname+"annotated.vcf"]))
+	oLogger.debug("Added rsID")
 
 def ParsingBAM(N):
 	#Index Aligned.sortByCoord.out.bam
@@ -120,7 +127,11 @@ if __name__ == '__main__':
 	snpeff=cfg['tools']['snpeff']
 	editsite=cfg['lib']['editsite']
 	perl=cfg['lib']['PERL5LIB']
-	
+	java=cfg['tools']['java']
+	SnpEff=cfg['tools']['snpeff']
+	SnpSift=cfg['tools']['snpsift']
+	vcfdatabase=cfg['lib']['vcfdatabase']
+
 	os.environ['HISAT2_INDEXES']=HISAT2ref
 	os.environ['PERL5LIB']=perl
 
@@ -192,11 +203,12 @@ if __name__ == '__main__':
 
 	command[8]=[snpEff,[]]
 	
+	command[9]=[snpSift,[]]
 	oLogger.debug("Setup commands")
 
 	# Initial steps
 	stepsDone = {}
-	for i in range(1,9):
+	for i in range(1,10):
 		stepsDone[i] = "False"
 	oLogger.debug("Setup tasks pool")
 
@@ -211,7 +223,7 @@ if __name__ == '__main__':
 	
 	oLogger.debug("Get job status" + str(stepsDone))
 
-	for step in range (1,9):
+	for step in range (1,10):
 		if stepsDone[step] == "False":
 			params = command[step][1]
 			command[step][0](*params)
