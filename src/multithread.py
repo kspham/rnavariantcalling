@@ -50,7 +50,7 @@ class ThreadPool:
         self.tasks.join()
 
 def call(chr, len):
-        os.system(' '.join([BAYES, "-f", REF, "-C 5","--use-best-n-alleles 4","--min-alternate-count 10","--min-alternate-fraction 0.8","-r", 
+        os.system(' '.join([BAYES, "-f", REF, "-C 5","-r", 
 chr+":0.."+len,BAM, ">", DIR+chr+".vcf"]))
 
 if __name__ == '__main__':
