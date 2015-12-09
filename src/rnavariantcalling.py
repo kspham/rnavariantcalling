@@ -69,14 +69,14 @@ def filter2():
 
 def snpEff():
 	os.chdir(output)
-	exeCommand(' '.join([java,"-Xmx10g","-jar", SnpEff, "-v",
+	exeCommand(' '.join(["java","-Xmx10g","-jar", SnpEff, "-v",
 "GRCh37.75",uname+".recode.vcf",">",uname+"ann.vcf"]))
 	oLogger.debug("Done annotation!")
 
 def snpSift():
 	os.chdir(output)
 	exeCommand(' '.join(["sed 's/^chr//'",uname+"ann.vcf",">","tmp","&& mv tmp",uname+"ann.vcf"]))
-	exeCommand(' '.join([java,"-jar", SnpSift, "annotate", "-id",
+	exeCommand(' '.join(["java","-jar", SnpSift, "annotate", "-id",
 vcfdatabase,uname+"ann.vcf",">",uname+"annotated.vcf"]))
 	oLogger.debug("Added rsID")
 
