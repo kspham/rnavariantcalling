@@ -104,6 +104,8 @@ if __name__ == '__main__':
 	parser.add_argument('--outdir', '-o',type=str, help='Where the final result will be stored')
 	parser.add_argument('--ThreadsN', metavar='N', type=str, help='Number of threads', default='4')
 	parser.add_argument('--config', metavar='yamlFile', type=str, help='Config file as yaml format', required=True) 
+	parser.add_argument('--set', metavar='Steps will be set Done', type=str, nargs='+')
+	parser.add_argument('--unset',metavar='Steps will be set NOT done yet',type=str,nargs='+')
 	args=parser.parse_args()
 
 	#Parse yaml file:
@@ -127,7 +129,7 @@ if __name__ == '__main__':
 	snpeff=cfg['tools']['snpeff']
 	editsite=cfg['lib']['editsite']
 	perl=cfg['lib']['PERL5LIB']
-	java=cfg['tools']['java']
+	#java=cfg['tools']['java']
 	SnpEff=cfg['tools']['snpeff']
 	SnpSift=cfg['tools']['snpsift']
 	vcfdatabase=cfg['lib']['vcfdatabase']
@@ -220,6 +222,15 @@ if __name__ == '__main__':
 			stepsDone[int(l[0])] = l[1]
 	except IOError:
 		steps = open(job,"w")
+
+	# Get done steps from user input
+	if args.set:
+		for step in args.set:
+			stepsDone[int(step)]="True"
+	# Get NOT done yet steps from user input
+	if args.unset:
+		for step in args.unset:
+			stepsDone[int(step)]="False"
 	
 	oLogger.debug("Get job status" + str(stepsDone))
 

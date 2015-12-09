@@ -45,9 +45,3 @@ if [ ! -f "$SCRIPTPATH/lib/All_20151104.vcf.gz.tbi" ]; then
 cd $SCRIPTPATH/lib
 wget 'ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606/VCF/All_20151104.vcf.gz.tbi';
 fi
-
-if [ ! -f "$SCRIPTPATH/bin/java64.tar.gz" ]; then
-cd $SCRIPTPATH/bin
-wget -O java64.tar.gz 'http://javadl.sun.com/webapps/download/AutoDL?BundleId=111741'
-tar -xvzf java64.tar.gz
-fi
