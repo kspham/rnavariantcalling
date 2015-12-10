@@ -210,7 +210,7 @@ if __name__ == '__main__':
 
 	# Initial steps
 	stepsDone = {}
-	for i in range(1,10):
+	for i in range(1,9):
 		stepsDone[i] = "False"
 	oLogger.debug("Setup tasks pool")
 
@@ -234,7 +234,7 @@ if __name__ == '__main__':
 	
 	oLogger.debug("Get job status" + str(stepsDone))
 
-	for step in range (1,10):
+	for step in range (1,9):
 		if stepsDone[step] == "False":
 			params = command[step][1]
 			command[step][0](*params)
