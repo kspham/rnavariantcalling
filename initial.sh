@@ -30,18 +30,3 @@ wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/hg19.2bit
 chmod +x $BIT2FA
 $BIT2FA hg19.2bit hg19.fa
 fi
-
-if [ ! -f "$SCRIPTPATH/lib/All_20150605.vcf.gz" ]; then
-cd $SCRIPTPATH/lib
-if wget 'ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b144_GRCh37p13/VCF/All_20150605.vcf.gz'; then
-echo "VCF database downloaded";
-else
-rm All_20150605.vcf.gz
-echo "Download error! Please run initial again";
-fi
-fi
-
-if [ ! -f "$SCRIPTPATH/lib/All_20150605.vcf.gz.tbi" ]; then
-cd $SCRIPTPATH/lib
-wget 'ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b144_GRCh37p13/VCF/All_20150605.vcf.gz.tbi';
-fi
