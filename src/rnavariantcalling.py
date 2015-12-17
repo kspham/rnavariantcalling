@@ -106,6 +106,7 @@ if __name__ == '__main__':
 	parser.add_argument('--config', metavar='yamlFile', type=str, help='Config file as yaml format', required=True) 
 	parser.add_argument('--set', metavar='Steps will be set Done', type=str, nargs='+')
 	parser.add_argument('--unset',metavar='Steps will be set NOT done yet',type=str,nargs='+')
+	parser.add_argument('--logdir',help='Logging directory',type=str)
 	args=parser.parse_args()
 
 	#Parse yaml file:
@@ -151,10 +152,13 @@ if __name__ == '__main__':
         uname = MD5string(reads[0])
 
 	#Initial Logging
-
+	if args.logdir:
+		logdir=os.path.abspath(args.logdir)
+	else:
+		logdir="."
         oLogger=logging.getLogger("RNAvariantcalling")
         oLogger.setLevel(logging.DEBUG)
-        oLoggerHandler=logging.handlers.RotatingFileHandler("./"+uname+".log",maxBytes=10485760, backupCount=10)
+        oLoggerHandler=logging.handlers.RotatingFileHandler(logdir+"/"+uname+".log",maxBytes=10485760, backupCount=10)
 	oFormatter=logging.Formatter("%(levelname)s:[%(asctime)s]-[%(filename)s at line (%(lineno)d) of (%(funcName)s) function]-[%(message)s]")
 	oLoggerHandler.setFormatter(oFormatter)
 	oLogger.addHandler(oLoggerHandler)
