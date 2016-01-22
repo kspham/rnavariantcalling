@@ -76,7 +76,7 @@ def snpEff():
 def snpSift():
 	os.chdir(output)
 	exeCommand(' '.join(["sed 's/^chr//'",uname+"ann.vcf",">","tmp","&& mv tmp",uname+"ann.vcf"]))
-	exeCommand(' '.join(["java","-jar", SnpSift, "annotate", "-id",
+	exeCommand(' '.join(["java","-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC","-jar", SnpSift, "annotate", "-id",
 vcfdatabase,uname+"ann.vcf",">",uname+"annotated.vcf"]))
 	oLogger.debug("Added rsID")
 
