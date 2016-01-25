@@ -28,7 +28,10 @@ if __name__ == '__main__':
             if(len(subdir)> 1):
                 SUB_PATH1 = "%s/%s/HISAT2.Aligned" % (ROOT_PATH, subdir)
                 SUB_PATH2 = "%s/%s/HISAT2.Aligned.bam" % (ROOT_PATH, subdir)
+                SUB_PATH3 = "%s/%s/HISAT2.Aligned.sorted.bam" % (ROOT_PATH, subdir)
                 exeCommand(shellEscape(' '.join(["rm", "-f", SUB_PATH1])))
-                exeCommand(shellEscape(' '.join(["rm", "-f", SUB_PATH2])))
                 print("Done:%s" % (SUB_PATH1))
+                exeCommand(shellEscape(' '.join(["rm", "-f", SUB_PATH2])))
                 print("Done:%s" % (SUB_PATH2))
+                exeCommand(shellEscape(' '.join(["rm", "-f", SUB_PATH3])))
+                print("Done:%s" % (SUB_PATH3))
