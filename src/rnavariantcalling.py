@@ -234,12 +234,12 @@ if __name__ == '__main__':
     command[8] = [snpEff, []]
 
     command[9] = [snpSift, []]
-    command[9] = [cleanBam, [STARout, HISAT2out]]
+    command[10] = [cleanBam, [STARout, HISAT2out]]
     oLogger.debug("Setup commands")
 
     # Initial steps
     stepsDone = {}
-    for i in range(1, 9):
+    for i in range(1, 10):
         stepsDone[i] = "False"
     oLogger.debug("Setup tasks pool")
 
@@ -263,7 +263,7 @@ if __name__ == '__main__':
 
     oLogger.debug("Get job status" + str(stepsDone))
 
-    for step in range(1, 9):
+    for step in range(1, 10):
         if stepsDone[step] == "False":
             params = command[step][1]
             command[step][0](*params)
