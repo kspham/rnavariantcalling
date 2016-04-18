@@ -79,19 +79,19 @@ def filter2():
     oLogger.debug("Done filtering stage 2")
 
 
-def snpEff():
+def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.74'}):
     os.chdir(output)
     exeCommand(' '.join(["java", "-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
-                         "GRCh37.75", uname + ".recode.vcf", ">", uname + "ann.vcf"]))
+                         names[ref], uname + ".recode.vcf", ">", uname + "ann.vcf"]))
     oLogger.debug("Done annotation!")
 
 
-def snpSift():
+def snpSift(database):
     os.chdir(output)
     exeCommand(' '.join(["sed 's/^chr//'", uname + "ann.vcf", ">", "tmp", "&& mv tmp", uname + "ann.vcf"]))
     exeCommand(' '.join(
         ["java", "-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
-         vcfdatabase, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
+         database, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
     oLogger.debug("Added rsID")
 
 
@@ -105,8 +105,8 @@ def ParsingBAM(N):
     output = "HISAT2.Aligned"
     exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", output + ".bam"])))
     oLogger.debug("Convert %s to %s" % (output, output + ".bam"))
-    exeCommand(
-        shellEscape(' '.join(["samtools reheader", header, output + ".bam", "> temp", "&& mv temp", output + ".bam"])))
+    """exeCommand(
+        shellEscape(' '.join(["samtools reheader", newheader, output + ".bam", "> temp", "&& mv temp", output + ".bam"])))"""
     oLogger.debug("Reheader BAM file")
     exeCommand(shellEscape(' '.join([SAMBAMBA, "sort -t", N, "-o", output + ".sorted.bam", output + ".bam"])))
     oLogger.debug("Sort %s" % (output + ".bam"))
@@ -131,10 +131,13 @@ if __name__ == '__main__':
     parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
     args = parser.parse_args()
 
+    if args.species not in set(["hg19", "mm10"]):
+        return
+
     #Parse yaml file:
     with open(args.config, "r") as ymlfile:
         cfg = yaml.load(ymlfile)
-    header = cfg['lib']['header']
+    #headers = cfg['lib']['headers']
     TEMP = cfg['folder']['tmp']
     temporary = cfg['folder']['temporary']
     STARout = cfg['folder']['STARout']
@@ -146,12 +149,14 @@ if __name__ == '__main__':
         HISAT2ref = cfg['lib']['hg19HISAT2ref']
         REF = cfg['lib']['hg19REF']
         CHRO = cfg['lib']['hg19chro']
+        editsite = cfg['lib']['hg19editsite']
     else:
         #mm10
         STARref = cfg['lib']['mm10STARref']
         HISAT2ref = cfg['lib']['mm10HISAT2ref']
         REF = cfg['lib']['mm10REF']
         CHRO = cfg['lib']['mm10chro']
+        editsite = cfg['lib']['mm10editsite']
 
     STAR = cfg['tools']['STAR']
     hisat2 = cfg['tools']['hisat2']
@@ -160,7 +165,6 @@ if __name__ == '__main__':
     freebayes = cfg['tools']['freebayes']
     SAMBAMBA = cfg['tools']['sambamba']
     snpeff = cfg['tools']['snpeff']
-    editsite = cfg['lib']['editsite']
     perl = cfg['lib']['PERL5LIB']
     #java=cfg['tools']['java']
     SnpEff = cfg['tools']['snpeff']

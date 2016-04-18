@@ -1,16 +1,21 @@
 lib:
- header: path/header
+ headers:
+  hg19: path/hg19header
+  mm10: path/mm10header
  hg19chro: path/lib/hg19chr_coordinates.txt
  mm10chro: path/lib/mm10chr_coordinates.txt
- editsite: path/lib/human_edit.txt
+ hg19editsite: path/lib/human_edit.txt
+ mm10editsite: path/lib/mouse_edit.txt
  hg19REF: path/lib/hg19.fa
  mm10REF: path/lib/mm10.fa
  hg19STARref: path/STARref/hg19
  mm10STARref: path/STARref/mm10
  hg19HISAT2ref: path/HISAT2ref/hg19
- mm19HISAT2ref: path/HISAT2ref/mm10
+ mm10HISAT2ref: path/HISAT2ref/mm10
  PERL5LIB: path/bin/vcftools_0.1.13/perl
- vcfdatabase: path/lib/All_20150605.vcf.gz
+ hg19vcfdatabase: path/lib/All_20150605.vcf.gz
+ mm10vcfdatabase: path/lib/
+
 tools:
  freebayes: path/bin/freebayes
  STAR: path/bin/STAR

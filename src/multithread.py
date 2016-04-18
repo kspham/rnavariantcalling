@@ -10,7 +10,7 @@ import sys
 #REF = "GRCh37.fa"
 #BAM = "HISAT2/CM27.sorted.bam"
 #THREADs = 32
-#CHRO = "chr_coordinates.txt"
+#CHRO = "hg19chr_coordinates.txt"
 #DIR = "$PWD"
 try:
 	REF, BAYES, BAM, CHRO, THREADS, DIR= sys.argv[1:]

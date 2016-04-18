@@ -13,16 +13,16 @@ mkdir $HISAT2
 fi
 
 if [ ! -d "$STAR/out" ]; then
-cd $STAR && wget -O STARindex.tar.gz --no-check-certificate --no-proxy --timestamping 'https://www.encodeproject.org/files/ENCFF069ZCO/@@download/ENCFF069ZCO.tar.gz'
-tar -xvzf STARindex.tar.gz
+cd $STAR && wget -O hg19STARindex.tar.gz --no-check-certificate --no-proxy --timestamping 'https://www.encodeproject.org/files/ENCFF069ZCO/@@download/ENCFF069ZCO.tar.gz'
+tar -xvzf hg19STARindex.tar.gz
 rm STARindex.tar.gz
 mv out hg19
 fi
 
 if [ ! -d "$STAR/out" ]; then
-cd $STAR && wget -O STARindex.tar.gz --no-check-certificate --no-proxy --timestamping 'https://www.encodeproject.org/files/ENCFF518RJA/@@download/ENCFF518RJA.tar.gz'
-tar -xvzf STARindex.tar.gz
-rm STARindex.tar.gz
+cd $STAR && wget -O mm10STARindex.tar.gz --no-check-certificate --no-proxy --timestamping 'https://www.encodeproject.org/files/ENCFF518RJA/@@download/ENCFF518RJA.tar.gz'
+tar -xvzf mm10STARindex.tar.gz
+rm mm10STARindex.tar.gz
 mv out mm10
 fi
 
