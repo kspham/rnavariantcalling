@@ -54,19 +54,14 @@ def call(chr, len):
 chr+":0.."+len,BAM, ">", DIR+chr+".vcf"]))
 
 if __name__ == '__main__':
-	
     # 1) Init a Thread pool with the desired number of threads
     pool = ThreadPool(int(THREADS))
     
-    data=[]
-    chrs = open(CHRO)
-    for line in chrs:
-        l = line.split()[1:]
-        data.append([l[0][3:], l[1][3:]])
+    data = [line.strip().split() for line in open(CHRO)]
 
     # 2) Add the task to the queue
     for chr in data:
-	pool.add_task(call,chr[0], chr[1])
+        pool.add_task(call,chr[0], chr[1])
     
     # 3) Wait for completion
     pool.wait_completion()

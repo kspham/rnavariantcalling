@@ -128,6 +128,7 @@ if __name__ == '__main__':
     parser.add_argument('--set', metavar='Steps will be set Done', type=str, nargs='+')
     parser.add_argument('--unset', metavar='Steps will be set NOT done yet', type=str, nargs='+')
     parser.add_argument('--logdir', help='Logging directory', type=str)
+    parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
     args = parser.parse_args()
 
     #Parse yaml file:
@@ -138,10 +139,20 @@ if __name__ == '__main__':
     temporary = cfg['folder']['temporary']
     STARout = cfg['folder']['STARout']
     HISAT2out = cfg['folder']['HISAT2out']
-    STARref = cfg['lib']['STARref']
-    HISAT2ref = cfg['lib']['HISAT2ref']
-    REF = cfg['lib']['REF']
-    CHRO = cfg['lib']['chro']
+
+    #hg19
+    if args.species == 'hg19':
+        STARref = cfg['lib']['hg19STARref']
+        HISAT2ref = cfg['lib']['hg19HISAT2ref']
+        REF = cfg['lib']['hg19REF']
+        CHRO = cfg['lib']['hg19chro']
+    else:
+        #mm10
+        STARref = cfg['lib']['mm10STARref']
+        HISAT2ref = cfg['lib']['mm10HISAT2ref']
+        REF = cfg['lib']['mm10REF']
+        CHRO = cfg['lib']['mm10chro']
+
     STAR = cfg['tools']['STAR']
     hisat2 = cfg['tools']['hisat2']
     vcftools = cfg['tools']['vcftools']

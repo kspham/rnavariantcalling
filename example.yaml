@@ -1,10 +1,14 @@
 lib:
  header: path/header
- chro: path/lib/chr_coordinates.txt
+ hg19chro: path/lib/hg19chr_coordinates.txt
+ mm10chro: path/lib/mm10chr_coordinates.txt
  editsite: path/lib/human_edit.txt
- REF: path/lib/hg19.fa
- STARref: path/STARref/out
- HISAT2ref: path/HISAT2ref/grch37
+ hg19REF: path/lib/hg19.fa
+ mm10REF: path/lib/mm10.fa
+ hg19STARref: path/STARref/hg19
+ mm10STARref: path/STARref/mm10
+ hg19HISAT2ref: path/HISAT2ref/hg19
+ mm19HISAT2ref: path/HISAT2ref/mm10
  PERL5LIB: path/bin/vcftools_0.1.13/perl
  vcfdatabase: path/lib/All_20150605.vcf.gz
 tools:
