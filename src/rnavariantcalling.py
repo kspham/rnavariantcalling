@@ -13,7 +13,7 @@ import logging
 import logging.handlers
 
 # MD5 function
-def MD5string(strData):
+def MD5stringdata(strData):
     m = hashlib.md5()
     m.update(strData.encode('UTF-8'))
     return m.hexdigest()
@@ -185,7 +185,7 @@ if __name__ == '__main__':
         reads[i] = os.path.abspath(reads[i])
 
     # Generate job name
-    uname = MD5string(reads[0])
+    uname = MD5stringdata(reads[0])
 
     #Initial Logging
     if args.logdir:
