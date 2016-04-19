@@ -194,10 +194,15 @@ if __name__ == '__main__':
     oLogger.setLevel(logging.DEBUG)
     oLoggerHandler = logging.handlers.RotatingFileHandler(logdir + "/" + uname + ".log", maxBytes=10485760,
                                                           backupCount=10)
+    oLoggerStreamHandler = logging.StreamHandler()
+    oLoggerStreamHandler.setLevel(logging.DEBUG)
+
     oFormatter = logging.Formatter(
         "%(levelname)s:[%(asctime)s]-[%(filename)s at line (%(lineno)d) of (%(funcName)s) function]-[%(message)s]")
     oLoggerHandler.setFormatter(oFormatter)
+    oLoggerStreamHandler.setFormatter(oFormatter)
     oLogger.addHandler(oLoggerHandler)
+    oLogger.addHandler(oLoggerStreamHandler)
 
     oLogger.debug("Job name as MD5 hash of file name:" + uname)
     oLogger.debug("Reads input: " + str(reads))
