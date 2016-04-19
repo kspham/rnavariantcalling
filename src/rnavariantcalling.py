@@ -6,8 +6,6 @@ import os, sys
 import argparse
 import subprocess
 import yaml
-import uuid
-import random
 import hashlib
 import logging
 import logging.handlers
