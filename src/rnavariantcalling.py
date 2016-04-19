@@ -86,12 +86,12 @@ def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.74'}):
     oLogger.debug("Done annotation!")
 
 
-def snpSift(database):
+def snpSift():
     os.chdir(output)
     exeCommand(' '.join(["sed 's/^chr//'", uname + "ann.vcf", ">", "tmp", "&& mv tmp", uname + "ann.vcf"]))
     exeCommand(' '.join(
         ["java", "-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
-         database, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
+         vcfdatabase, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
     oLogger.debug("Added rsID")
 
 
@@ -107,7 +107,7 @@ def ParsingBAM(N):
     oLogger.debug("Convert %s to %s" % (output, output + ".bam"))
     """exeCommand(
         shellEscape(' '.join(["samtools reheader", newheader, output + ".bam", "> temp", "&& mv temp", output + ".bam"])))"""
-    oLogger.debug("Reheader BAM file")
+    #oLogger.debug("Reheader BAM file")
     exeCommand(shellEscape(' '.join([SAMBAMBA, "sort -t", N, "-o", output + ".sorted.bam", output + ".bam"])))
     oLogger.debug("Sort %s" % (output + ".bam"))
     exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, output + ".sorted.bam"])))
@@ -150,6 +150,7 @@ if __name__ == '__main__':
         REF = cfg['lib']['hg19REF']
         CHRO = cfg['lib']['hg19chro']
         editsite = cfg['lib']['hg19editsite']
+        vcfdatabase = cfg['lib']['hg19vcfdatabase']
     else:
         #mm10
         STARref = cfg['lib']['mm10STARref']
@@ -157,6 +158,7 @@ if __name__ == '__main__':
         REF = cfg['lib']['mm10REF']
         CHRO = cfg['lib']['mm10chro']
         editsite = cfg['lib']['mm10editsite']
+        vcfdatabase = cfg['lib']['mm10vcfdatabase']
 
     STAR = cfg['tools']['STAR']
     hisat2 = cfg['tools']['hisat2']
@@ -169,7 +171,7 @@ if __name__ == '__main__':
     #java=cfg['tools']['java']
     SnpEff = cfg['tools']['snpeff']
     SnpSift = cfg['tools']['snpsift']
-    vcfdatabase = cfg['lib']['vcfdatabase']
+
 
     os.environ['HISAT2_INDEXES'] = HISAT2ref
     os.environ['PERL5LIB'] = perl

@@ -1,7 +1,4 @@
 lib:
- headers:
-  hg19: path/hg19header
-  mm10: path/mm10header
  hg19chro: path/lib/hg19chr_coordinates.txt
  mm10chro: path/lib/mm10chr_coordinates.txt
  hg19editsite: path/lib/human_edit.txt
@@ -14,7 +11,7 @@ lib:
  mm10HISAT2ref: path/HISAT2ref/mm10
  PERL5LIB: path/bin/vcftools_0.1.13/perl
  hg19vcfdatabase: path/lib/All_20150605.vcf.gz
- mm10vcfdatabase: path/lib/
+ mm10vcfdatabase: path/lib/Mus_musculus.vcf.gz
 
 tools:
  freebayes: path/bin/freebayes
