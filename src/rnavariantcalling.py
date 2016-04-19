@@ -131,8 +131,6 @@ if __name__ == '__main__':
     parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
     args = parser.parse_args()
 
-    if args.species not in set(["hg19", "mm10"]):
-        return
 
     #Parse yaml file:
     with open(args.config, "r") as ymlfile:
