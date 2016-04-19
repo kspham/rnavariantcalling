@@ -51,3 +51,14 @@ wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/bigZips/mm10.2bit
 chmod +x $BIT2FA
 $BIT2FA mm10.2bit mm10.fa
 fi
+
+if [ ! -f "$SCRIPTPATH/lib/All_20151104.vcf.gz" ];then
+cd $SCRIPTPATH/lib/
+wget -m ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b144_GRCh37p13/VCF/All_20151104.vcf.gz*
+fi
+
+if [ ! -f "$SCRIPTPATH/lib/Mus_musculus.vcf.gz" ];then
+cd $SCRIPTPATH/lib/
+wget -m ftp://ftp.ensembl.org/pub/release-84/variation/vcf/mus_musculus/Mus_musculus.vcf.gz*
+fi
+
