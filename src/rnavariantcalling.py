@@ -39,6 +39,7 @@ def shellEscape(s):
 
 #Mapping with STAR
 def STAR_mapping(reads, ReadIsGzipped, N, dir):
+    oLogger.debug("Run STAR mapping with genome reference %s" %(dir))
     os.chdir(STARout)
     exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N, "--genomeDir", dir, "--readFilesIn",
                                      ' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax",
@@ -50,6 +51,7 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
 
 #Mapping with HISAT2
 def HISAT2_mapping(reads, N, output, pairend):
+    oLogger.debug("Run HISAT2 mapping with genome reference %s" %(HISAT2ref))
     os.chdir(HISAT2out)
     if pairend:
         exeCommand(
@@ -78,6 +80,7 @@ def filter2():
 
 
 def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.74'}):
+
     os.chdir(output)
     exeCommand(' '.join(["java", "-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
                          names[ref], uname + ".recode.vcf", ">", uname + "ann.vcf"]))
@@ -249,7 +252,7 @@ if __name__ == '__main__':
 
     command[7] = [filter2, []]
 
-    command[8] = [snpEff, []]
+    command[8] = [snpEff, [args.species]]
 
     command[9] = [snpSift, []]
     command[10] = [cleanBam, [STARout, HISAT2out]]
