@@ -65,5 +65,7 @@ tabix -p vcf Mus_musculus.vcf.gz
 fi
 
 cd $SCRIPTPATH/bin/snpEff
-java -jar snpEff.jar download -v GRCh37.75
-java -jar snpEff.jar download -v GRCm38.74
+wget http://downloads.sourceforge.net/project/snpeff/databases/v4_1/snpEff_v4_1_GRCm38.74.zip
+unzip snpEff_v4_1_GRCm38.74.zip
+wget http://downloads.sourceforge.net/project/snpeff/databases/v4_1/snpEff_v4_1_GRCh37.75.zip
+unzip snpEff_v4_1_GRCh37.75.zip
