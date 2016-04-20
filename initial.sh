@@ -64,3 +64,6 @@ wget ftp://ftp.ensembl.org/pub/release-84/variation/vcf/mus_musculus/Mus_musculu
 tabix -p vcf Mus_musculus.vcf.gz 
 fi
 
+cd $SCRIPTPATH/bin/snpEff
+java -jar snpEff.jar download -v GRCh37.75
+java -jar snpEff.jar download -v GRCm38.74
