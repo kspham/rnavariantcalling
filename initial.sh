@@ -54,7 +54,7 @@ fi
 
 if [ ! -f $SCRIPTPATH/lib/All_20151104.vcf.gz ];then
 cd $SCRIPTPATH/lib/
-wget ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b144_GRCh37p13/VCF/All_20150605.vcf.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b146_GRCh37p13/VCF/All_20150605.vcf.gz
 tabix -p vcf All_20150605.vcf.gz
 fi
 
@@ -64,8 +64,10 @@ wget ftp://ftp.ensembl.org/pub/release-84/variation/vcf/mus_musculus/Mus_musculu
 tabix -p vcf Mus_musculus.vcf.gz 
 fi
 
+if [ ! -d $SCRIPTPATH/bin/snpEff/data ]; then
 cd $SCRIPTPATH/bin/snpEff
 wget http://downloads.sourceforge.net/project/snpeff/databases/v4_1/snpEff_v4_1_GRCm38.74.zip
 unzip snpEff_v4_1_GRCm38.74.zip
 wget http://downloads.sourceforge.net/project/snpeff/databases/v4_1/snpEff_v4_1_GRCh37.75.zip
 unzip snpEff_v4_1_GRCh37.75.zip
+fi
