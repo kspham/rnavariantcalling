@@ -68,6 +68,8 @@ if [ ! -d $SCRIPTPATH/bin/snpEff/data ]; then
 cd $SCRIPTPATH/bin/snpEff
 wget http://downloads.sourceforge.net/project/snpeff/databases/v4_2/snpEff_v4_2_GRCm38.82.zip
 unzip snpEff_v4_2_GRCm38.82.zip
+rm snpEff_v4_2_GRCm38.82.zip
 wget http://downloads.sourceforge.net/project/snpeff/databases/v4_2/snpEff_v4_2_GRCh37.75.zip
 unzip snpEff_v4_2_GRCh37.75.zip
+rm snpEff_v4_2_GRCh37.75.zip
 fi
