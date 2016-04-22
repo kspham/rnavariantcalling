@@ -91,7 +91,7 @@ def snpSift():
     os.chdir(output)
     exeCommand(' '.join(["sed 's/^chr//'", uname + "ann.vcf", ">", "tmp", "&& mv tmp", uname + "ann.vcf"]))
     exeCommand(' '.join(
-        ["java", "-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
+        ["java", "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
          vcfdatabase, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
     oLogger.debug("Added rsID")
 
@@ -167,7 +167,7 @@ if __name__ == '__main__':
     SAMBAMBA = cfg['tools']['sambamba']
     snpeff = cfg['tools']['snpeff']
     perl = cfg['lib']['PERL5LIB']
-    #java=cfg['tools']['java']
+    java=cfg['tools']['java']
     SnpEff = cfg['tools']['snpeff']
     SnpSift = cfg['tools']['snpsift']
 
@@ -195,8 +195,7 @@ if __name__ == '__main__':
         logdir = "."
     oLogger = logging.getLogger("RNAvariantcalling")
     oLogger.setLevel(logging.DEBUG)
-    oLoggerHandler = logging.handlers.RotatingFileHandler(logdir + "/" + uname + ".log", maxBytes=10485760,
-                                                          backupCount=10)
+    oLoggerHandler = logging.handlers.RotatingFileHandler(logdir + "/" + uname + ".log", maxBytes=10485760, backupCount=10)
     oLoggerStreamHandler = logging.StreamHandler()
     oLoggerStreamHandler.setLevel(logging.DEBUG)
 
@@ -233,8 +232,7 @@ if __name__ == '__main__':
         os.makedirs(output)
     except OSError:
         pass
-    oLogger.debug(
-        "Making TEMP STARout and HISAT2out directories" + "%s\n%s\n%s\n%s" % (TEMP, STARout, HISAT2out, output))
+    oLogger.debug("Making TEMP STARout and HISAT2out directories" + "%s\n%s\n%s\n%s" % (TEMP, STARout, HISAT2out, output))
 
     command = {}
 
