@@ -14,15 +14,15 @@ lib:
  mm10vcfdatabase: path/lib/Mus_musculus.vcf.gz
 
 tools:
- freebayes: path/bin/freebayes
- STAR: path/bin/STAR
- hisat2: path/bin/hisat2-2.0.1-beta/hisat2
+ freebayes: freebayes
+ STAR: STAR
+ hisat2: hisat2
  vcftools: path/bin/vcftools_0.1.13/bin/vcftools
  vcfconcat: path/bin/vcftools_0.1.13/bin/vcf-concat
- sambamba: path/bin/sambamba_v0.5.9
+ sambamba: sambamba
  snpeff: path/bin/snpEff/snpEff.jar
  snpsift: path/bin/snpEff/SnpSift.jar
- java: path/bin/jre1.8.0_66/bin/java
+ java: java
 folder:
  STARout: path/STAR/
  HISAT2out: path/HISAT2/
