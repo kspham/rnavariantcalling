@@ -118,6 +118,8 @@ def ParsingBAM(N):
 def cleanBam(starDir, hisat2Dir):
     exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned"])))
     exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned.bam"])))
+    exeCommand(shellEscape(' '.join(["rm", "-rf", starDir])))
+    exeCommand(shellEscape(' '.join(["rm", "-rf", hisat2Dir + "/chr*.vcf"])))
     oLogger.debug("Clean:HISAT2.Aligned, HISAT2.Aligned.bam")
 
 ###Main FUNCTION
