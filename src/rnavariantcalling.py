@@ -79,7 +79,7 @@ def filter2():
     oLogger.debug("Done filtering stage 2")
 
 
-def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.74'}):
+def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.82'}):
 
     os.chdir(output)
     exeCommand(' '.join(["java", "-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
