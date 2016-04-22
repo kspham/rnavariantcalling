@@ -28,6 +28,7 @@ def exeCommand(sCommand):
         #if(self.RUNNING_DEBUG_FLAG == 1):
         outStringData = str(lineData)
         print("%s" % (outStringData))
+
     ###If there is error
     if ((errData != None) and (len(errData) > 0)):
         print("Command has error:{0}".format(errData))
@@ -82,7 +83,7 @@ def filter2():
 def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.82'}):
 
     os.chdir(output)
-    exeCommand(' '.join(["java", "-Xms2G -Xmx4G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
+    exeCommand(' '.join([java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
                          names[ref], uname + ".recode.vcf", ">", uname + "ann.vcf"]))
     oLogger.debug("Done annotation!")
 
@@ -91,7 +92,7 @@ def snpSift():
     os.chdir(output)
     exeCommand(' '.join(["sed 's/^chr//'", uname + "ann.vcf", ">", "tmp", "&& mv tmp", uname + "ann.vcf"]))
     exeCommand(' '.join(
-        ["java", "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
+        [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
          vcfdatabase, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
     oLogger.debug("Added rsID")
 
@@ -136,6 +137,8 @@ if __name__ == '__main__':
     #Parse yaml file:
     with open(args.config, "r") as ymlfile:
         cfg = yaml.load(ymlfile)
+        ymlfile.close()
+        
     #headers = cfg['lib']['headers']
     TEMP = cfg['folder']['tmp']
     temporary = cfg['folder']['temporary']
