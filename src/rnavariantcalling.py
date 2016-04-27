@@ -94,8 +94,8 @@ def snpSift():
     exeCommand(' '.join(
         [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
          vcfdatabase, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
-    exeCommand(' '.join('bgzip -c', uname+"annotated.vcf", ">", uname+"annotated.vcf.gz"))
-    exeCommand(' '.join('tabix -p', uname+"annotated.vcf.gz"))
+    exeCommand(' '.join(['bgzip -c', uname+"annotated.vcf", ">", uname+"annotated.vcf.gz"]))
+    exeCommand(' '.join(['tabix -p', uname+"annotated.vcf.gz"]))
     oLogger.debug("Added rsID")
 
 
@@ -135,7 +135,7 @@ if __name__ == '__main__':
     parser.add_argument('--unset', metavar='Steps will be set NOT done yet', type=str, nargs='+')
     parser.add_argument('--logdir', help='Logging directory', type=str)
     parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
-    parser.add_argument('--vcfdatabase', '-v', type=str, help='vcf database for annotation', required=True)
+    parser.add_argument('--vcfdatabase', '-v', type=str, help='vcf database for annotation')
     args = parser.parse_args()
 
 
@@ -178,7 +178,10 @@ if __name__ == '__main__':
     java=cfg['tools']['java']
     SnpEff = cfg['tools']['snpeff']
     SnpSift = cfg['tools']['snpsift']
-    vcfdatabase = args.vcfdatabase
+    if args.vcfdatabase:
+        vcfdatabase = args.vcfdatabase
+    else:
+        vcfdatabase = cfg['lib'][args.species+'vcfdatabase']
 
     os.environ['HISAT2_INDEXES'] = HISAT2ref
     os.environ['PERL5LIB'] = perl
