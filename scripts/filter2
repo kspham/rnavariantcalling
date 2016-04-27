@@ -24,9 +24,9 @@ ls $TEMP/*.recode.vcf.gz > lsfile
 $VCFCONCAT -f lsfile | bgzip -c > temp.vcf.gz
 $VCFTOOLS --gzvcf temp.vcf.gz --exclude-positions $EDITSITE --recode --recode-INFO-all --out $UNAME
 
-bgzip -c $UNAME.recode.vcf > $UNAME.recode.vcf.gz
-tabix -p vcf $UNAME.recode.vcf.gz
-mv $UNAME.recode.vcf* $OUTPUT
+#bgzip -c $UNAME.recode.vcf > $UNAME.recode.vcf.gz
+#tabix -p vcf $UNAME.recode.vcf.gz
+mv $UNAME.recode.vcf $OUTPUT
 
 
 

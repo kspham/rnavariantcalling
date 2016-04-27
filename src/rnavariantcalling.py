@@ -94,6 +94,8 @@ def snpSift():
     exeCommand(' '.join(
         [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
          vcfdatabase, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
+    exeCommand(' '.join('bgzip -c', uname+"annotated.vcf", ">", uname+"annotated.vcf.gz"))
+    exeCommand(' '.join('tabix -p', uname+"annotated.vcf.gz"))
     oLogger.debug("Added rsID")
 
 
