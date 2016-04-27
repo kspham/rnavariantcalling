@@ -7,6 +7,8 @@ VCFTOOLS=$1
 HISAT2=$2
 STAR=$3
 TEMP=$4
+OUTPUT=$5
+
 for f in $HISAT2/*.vcf; do
 	bgzip -c $f > $f.gz
 	tabix -p vcf $f.gz
@@ -23,7 +25,7 @@ for f in $STAR/*.vcf.gz; do
 done
 
 for f in $STAR/*.vcf.gz; do
-	
+
 	$VCFTOOLS --gzvcf $f --positions $f.common --recode --recode-INFO-all --out "${f%.*}"
 done
 
@@ -31,3 +33,4 @@ mv $STAR/*recode* $TEMP
 
 rm $STAR/*.vcf.*
 rm $HISAT2/*.vcf.*
+mv $HISAT2/HISAT2.Aligned.sorted.bam* $OUTPUT

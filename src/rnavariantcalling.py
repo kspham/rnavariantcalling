@@ -71,7 +71,7 @@ def Variant_Calling(bam, dir, threads):
 
 
 def filter1():
-    exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP])))
+    exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP, output])))
     oLogger.debug("Done filtering stage 1")
 
 
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     with open(args.config, "r") as ymlfile:
         cfg = yaml.load(ymlfile)
         ymlfile.close()
-        
+
     #headers = cfg['lib']['headers']
     TEMP = cfg['folder']['tmp']
     temporary = cfg['folder']['temporary']
