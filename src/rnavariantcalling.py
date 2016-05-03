@@ -51,27 +51,35 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
 
 
 #Mapping with HISAT2
-def HISAT2_mapping(reads, N, output, pairend):
-    oLogger.debug("Run HISAT2 mapping with genome reference %s" %(HISAT2ref))
-    os.chdir(HISAT2out)
-    if pairend:
-        exeCommand(
-            shellEscape(' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S",
-                                  output])))
+def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
+    if onlySTAR:
+        pass
     else:
-        exeCommand(shellEscape(
-            ' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]),
-                      "-S", output])))
-    oLogger.debug("Done aligment with HISAT2")
+        oLogger.debug("Run HISAT2 mapping with genome reference %s" %(HISAT2ref))
+        os.chdir(HISAT2out)
+        if pairend:
+            exeCommand(
+                shellEscape(' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-1", reads[0], "-2", reads[1], "-S",
+                                      output])))
+        else:
+            exeCommand(shellEscape(
+                ' '.join([hisat2, "--threads", N, "-q", "-x", "genome", "-U", ' '.join([read for read in reads]),
+                          "-S", output])))
+        oLogger.debug("Done aligment with HISAT2")
 
 
 def Variant_Calling(bam, dir, threads):
-    exeCommand(shellEscape(' '.join(["multithread.py", REF, freebayes, dir + "/" + bam, CHRO, threads, dir + "/"])))
+    ###Please put fasta_generate_regions.py in the current directory
+    exeCommand(shellEscape(' '.join(["freebayes-parallel","<(fasta_generate_regions.py", idxREF, "100000)",threads,
+    "-f", REF, bam, ">",dir+"/", uname+".vcf"])))
     oLogger.debug("Done calling variant for:" + bam)
 
 
-def filter1():
-    exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP, output])))
+def filter1(onlySTAR=None):
+    if not onlySTAR:
+        exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP, output])))
+    else:
+        exeCommand(shellEscape(' '.join(["mv", STARout+uname+".vcf", TEMP+"/"+uname+".recode.vcf"])))
     oLogger.debug("Done filtering stage 1")
 
 
@@ -99,23 +107,24 @@ def snpSift():
     oLogger.debug("Added rsID")
 
 
-def ParsingBAM(N):
+def ParsingBAM(N, onlySTAR):
+
     #Index Aligned.sortByCoord.out.bam
     os.chdir(STARout)
     exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, "Aligned.sortedByCoord.out.bam"])))
     oLogger.debug("Indexed:Aligned.sortByCoord.out.bam")
-    #Reheader and sort, index HISAT2.Aligned
-    os.chdir(HISAT2out)
-    output = "HISAT2.Aligned"
-    exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", output + ".bam"])))
-    oLogger.debug("Convert %s to %s" % (output, output + ".bam"))
-    """exeCommand(
-        shellEscape(' '.join(["samtools reheader", newheader, output + ".bam", "> temp", "&& mv temp", output + ".bam"])))"""
-    #oLogger.debug("Reheader BAM file")
-    exeCommand(shellEscape(' '.join([SAMBAMBA, "sort -t", N, "-o", output + ".sorted.bam", output + ".bam"])))
-    oLogger.debug("Sort %s" % (output + ".bam"))
-    exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, output + ".sorted.bam"])))
-    oLogger.debug("Indexed: %s" % (output + "sorted.bam.bai"))
+
+    #Convert and sort, index HISAT2.Aligned
+    if not onlySTAR:
+        os.chdir(HISAT2out)
+        output = "HISAT2.Aligned"
+        exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", output + ".bam"])))
+        oLogger.debug("Convert %s to %s" % (output, output + ".bam"))
+
+        exeCommand(shellEscape(' '.join([SAMBAMBA, "sort -t", N, "-o", output + ".sorted.bam", output + ".bam"])))
+        oLogger.debug("Sort %s" % (output + ".bam"))
+        exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, output + ".sorted.bam"])))
+        oLogger.debug("Indexed: %s" % (output + "sorted.bam.bai"))
 
 def cleanBam(starDir, hisat2Dir):
     exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned"])))
@@ -136,6 +145,8 @@ if __name__ == '__main__':
     parser.add_argument('--logdir', help='Logging directory', type=str)
     parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
     parser.add_argument('--vcfdatabase', '-v', type=str, help='vcf database for annotation')
+    parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
+    parser.set_defaults(onlySTAR=False)
     args = parser.parse_args()
 
 
@@ -157,6 +168,7 @@ if __name__ == '__main__':
         REF = cfg['lib']['hg19REF']
         CHRO = cfg['lib']['hg19chro']
         editsite = cfg['lib']['hg19editsite']
+        idxREF =cfg['lib']['hg19idx']
         #vcfdatabase = cfg['lib']['hg19vcfdatabase']
     else:
         #mm10
@@ -165,6 +177,7 @@ if __name__ == '__main__':
         REF = cfg['lib']['mm10REF']
         CHRO = cfg['lib']['mm10chro']
         editsite = cfg['lib']['mm10editsite']
+        idxREF =cfg['lib']['mm10idx']
         #vcfdatabase = cfg['lib']['mm10vcfdatabase']
 
     STAR = cfg['tools']['STAR']
@@ -249,9 +262,9 @@ if __name__ == '__main__':
 
     command[1] = [STAR_mapping, [reads, iszipped, args.ThreadsN, STARref]]
 
-    command[2] = [HISAT2_mapping, [reads, args.ThreadsN, "HISAT2.Aligned", len(reads) > 1]]
+    command[2] = [HISAT2_mapping, [reads, args.ThreadsN, "HISAT2.Aligned", len(reads) > 1, args.onlySTAR ]]
 
-    command[3] = [ParsingBAM, [args.ThreadsN]]
+    command[3] = [ParsingBAM, [args.ThreadsN, args.onlySTAR,]]
 
     command[4] = [Variant_Calling, ["Aligned.sortedByCoord.out.bam", STARout, args.ThreadsN]]
 
@@ -286,10 +299,15 @@ if __name__ == '__main__':
     if args.set:
         for step in args.set:
             stepsDone[int(step)] = "True"
+
     # Get NOT done yet steps from user input
     if args.unset:
         for step in args.unset:
             stepsDone[int(step)] = "False"
+
+    # Set command 5 is False due to args.onlySTAR
+    if args.onlySTAR:
+        stepsDone[5] = "True"
 
     oLogger.debug("Get job status" + str(stepsDone))
 

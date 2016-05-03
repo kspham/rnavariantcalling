@@ -33,4 +33,4 @@ mv $STAR/*recode* $TEMP
 
 rm $STAR/*.vcf.*
 rm $HISAT2/*.vcf.*
-mv $HISAT2/HISAT2.Aligned.sorted.bam* $OUTPUT
+mv $STAR/*.sorted.bam* $OUTPUT
