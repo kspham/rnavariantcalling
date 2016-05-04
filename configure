@@ -4,3 +4,5 @@ sed "s|path|$PWD|g" example.yaml > config.yaml
 if [ ! -d STAR ]; then
 mkdir STAR HISAT2 tmp temporary
 fi
+
+cd ./bin/vcftools_0.1.13 && make && make install
