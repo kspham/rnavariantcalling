@@ -19,6 +19,9 @@ def MD5stringdata(strData):
 
 #How to execute a command
 def exeCommand(sCommand):
+    ###Log command data
+    oLogger.debug(sCommand)
+
     ###Get all output data
     outData, errData = subprocess.Popen(sCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                         close_fds=True).communicate()
