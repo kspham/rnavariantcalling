@@ -82,8 +82,7 @@ def filter1(onlySTAR):
     if not onlySTAR:
         exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP, output])))
     else:
-        exeCommand(shellEscape(' '.join(["mv", STARout+"/"+uname+".vcf", TEMP+"/"+uname+".recode.vcf"])))
-        exeCommand(shellEscape(' '.join(["mv", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
+        exeCommand(shellEscape(' '.join(["cp", STARout+"/"+uname+".vcf", TEMP+"/"+uname+".recode.vcf"])))
     oLogger.debug("Done filtering stage 1")
 
 
@@ -131,10 +130,11 @@ def ParsingBAM(N, onlySTAR):
         oLogger.debug("Indexed: %s" % (output + "sorted.bam.bai"))
 
 def cleanBam(starDir, hisat2Dir):
-    exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned"])))
-    exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned.bam"])))
+    #exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned"])))
+    #exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned.bam"])))
+    exeCommand(shellEscape(' '.join(["cp", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     exeCommand(shellEscape(' '.join(["rm", "-rf", starDir])))
-    exeCommand(shellEscape(' '.join(["rm", "-rf", hisat2Dir + "/chr*.vcf"])))
+    #exeCommand(shellEscape(' '.join(["rm", "-rf", hisat2Dir + "/chr*.vcf"])))
     oLogger.debug("Clean:HISAT2.Aligned, HISAT2.Aligned.bam")
 
 ###Main FUNCTION
