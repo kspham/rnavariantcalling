@@ -12,8 +12,8 @@ lib:
  PERL5LIB: path/bin/vcftools_0.1.13/perl
  hg19vcfdatabase: path/lib/All_20150605.vcf.gz
  mm10vcfdatabase: path/lib/Mus_musculus.vcf.gz
- hg19region: path/lib/hg19.region
- mm10region: path/lib/mm10.region
+ hg19idx: path/lib/hg19.region
+ mm10idx: path/lib/mm10.region
 
 tools:
  freebayes: freebayes
