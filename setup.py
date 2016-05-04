@@ -10,5 +10,6 @@ setup(name='rnavariantcalling',
       packages=['rnavariantcalling'],
       
       install_requires=['pyyaml'],
-      scripts=['src/multithread.py', 'src/rnavariantcalling.py', 'scripts/filter', 'scripts/filter2', 'scripts/filter3'],
+      scripts=['src/multithread.py', 'src/rnavariantcalling.py', 'scripts/filter', 'scripts/filter2', 'scripts/filter3',
+	  			'scripts/vcffirstheader', 'scripts/vcfstreamsort', 'scripts/vcfuniq'],
       zip_safe=False)
