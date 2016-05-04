@@ -28,13 +28,13 @@ def exeCommand(sCommand):
 
     ###Get all response data
     for lineData in outData.splitlines():
-        #if(self.RUNNING_DEBUG_FLAG == 1):
-        outStringData = str(lineData)
-        print("%s" % (outStringData))
+        #outStringData = str(lineData)
+        #print("%s" % (outStringData))
+        continue
 
     ###If there is error
     if ((errData != None) and (len(errData) > 0)):
-        print("Command has error:{0}".format(errData))
+        oLogger.error("Command has error:{0}".format(errData))
 
 
 def shellEscape(s):
