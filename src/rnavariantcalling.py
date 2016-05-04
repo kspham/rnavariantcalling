@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/cluster/home/kspham/.local/bin/python
 
 """ Pipeline calling variant from RNA-seq"""
 
@@ -70,16 +70,20 @@ def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
 
 def Variant_Calling(bam, dir, threads):
     ###Please put fasta_generate_regions.py in the current directory
-    exeCommand(shellEscape(' '.join(["freebayes-parallel","<(fasta_generate_regions.py", idxREF, "100000)",threads,
-    "-f", REF, bam, ">",dir+"/", uname+".vcf"])))
+    os.chdir(STARout)
+    command = ' '.join(["freebayes-parallel",region,threads,
+    "-f", REF, bam, ">",dir+"/"+uname+".vcf"])
+    exeCommand(shellEscape(command))
+    oLogger.debug(command)
     oLogger.debug("Done calling variant for:" + bam)
 
 
-def filter1(onlySTAR=None):
+def filter1(onlySTAR):
     if not onlySTAR:
         exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP, output])))
     else:
-        exeCommand(shellEscape(' '.join(["mv", STARout+uname+".vcf", TEMP+"/"+uname+".recode.vcf"])))
+        exeCommand(shellEscape(' '.join(["mv", STARout+"/"+uname+".vcf", TEMP+"/"+uname+".recode.vcf"])))
+        exeCommand(shellEscape(' '.join(["mv", STARout+"/*.sorted.bam*", output])))
     oLogger.debug("Done filtering stage 1")
 
 
@@ -146,7 +150,7 @@ if __name__ == '__main__':
     parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
     parser.add_argument('--vcfdatabase', '-v', type=str, help='vcf database for annotation')
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
-    parser.set_defaults(onlySTAR=True)
+    parser.set_defaults(onlySTAR=False)
     args = parser.parse_args()
 
 
@@ -170,6 +174,7 @@ if __name__ == '__main__':
         editsite = cfg['lib']['hg19editsite']
         idxREF =cfg['lib']['hg19idx']
         #vcfdatabase = cfg['lib']['hg19vcfdatabase']
+        region=cfg['lib']['hg19region']
     else:
         #mm10
         STARref = cfg['lib']['mm10STARref']
@@ -270,7 +275,7 @@ if __name__ == '__main__':
 
     command[5] = [Variant_Calling, ["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
 
-    command[6] = [filter1, []]
+    command[6] = [filter1, [args.onlySTAR]]
 
     command[7] = [filter2, []]
 
