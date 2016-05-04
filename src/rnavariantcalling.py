@@ -83,7 +83,7 @@ def filter1(onlySTAR):
         exeCommand(shellEscape(' '.join(["filter", vcftools, HISAT2out, STARout, TEMP, output])))
     else:
         exeCommand(shellEscape(' '.join(["mv", STARout+"/"+uname+".vcf", TEMP+"/"+uname+".recode.vcf"])))
-        exeCommand(shellEscape(' '.join(["mv", STARout+"/*.sorted.bam*", output])))
+        exeCommand(shellEscape(' '.join(["mv", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     oLogger.debug("Done filtering stage 1")
 
 
