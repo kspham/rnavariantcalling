@@ -150,7 +150,7 @@ if __name__ == '__main__':
     parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
     parser.add_argument('--vcfdatabase', '-v', type=str, help='vcf database for annotation')
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
-    parser.set_defaults(onlySTAR=False)
+    parser.set_defaults(onlySTAR=True)
     args = parser.parse_args()
 
 
