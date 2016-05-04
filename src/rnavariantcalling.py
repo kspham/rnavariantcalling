@@ -172,7 +172,6 @@ if __name__ == '__main__':
         REF = cfg['lib']['hg19REF']
         CHRO = cfg['lib']['hg19chro']
         editsite = cfg['lib']['hg19editsite']
-        idxREF =cfg['lib']['hg19idx']
         #vcfdatabase = cfg['lib']['hg19vcfdatabase']
         region=cfg['lib']['hg19region']
     else:
@@ -182,7 +181,7 @@ if __name__ == '__main__':
         REF = cfg['lib']['mm10REF']
         CHRO = cfg['lib']['mm10chro']
         editsite = cfg['lib']['mm10editsite']
-        idxREF =cfg['lib']['mm10idx']
+        region=cfg['lib']['mm10region']
         #vcfdatabase = cfg['lib']['mm10vcfdatabase']
 
     STAR = cfg['tools']['STAR']
