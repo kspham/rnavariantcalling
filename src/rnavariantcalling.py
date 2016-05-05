@@ -28,9 +28,8 @@ def exeCommand(sCommand):
 
     ###Get all response data
     for lineData in outData.splitlines():
-        #outStringData = str(lineData)
-        #print("%s" % (outStringData))
-        continue
+        outStringData = str(lineData)
+        oLogger.info("%s" % (outStringData))
 
     ###If there is error
     if ((errData != None) and (len(errData) > 0)):
