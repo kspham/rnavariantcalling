@@ -28,8 +28,9 @@ def exeCommand(sCommand):
 
     ###Get all response data
     for lineData in outData.splitlines():
-        outStringData = str(lineData)
-        oLogger.info("%s" % (outStringData))
+        #outStringData = str(lineData)
+        #print("%s" % (outStringData))
+        continue
 
     ###If there is error
     if ((errData != None) and (len(errData) > 0)):
@@ -94,21 +95,22 @@ def filter2():
 
 
 def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.82'}):
-
     os.chdir(output)
+    fullname = output+"/"+uname
     exeCommand(' '.join([java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
-                         names[ref], uname + ".recode.vcf", ">", uname + "ann.vcf"]))
+                         names[ref], fullname + ".recode.vcf", ">", fullname + "ann.vcf"]))
     oLogger.debug("Done annotation!")
 
 
 def snpSift():
     os.chdir(output)
-    exeCommand(' '.join(["sed 's/^chr//'", uname + "ann.vcf", ">", "tmp", "&& mv tmp", uname + "ann.vcf"]))
+    fullname = output+"/"+uname
+    exeCommand(' '.join(["sed 's/^chr//'", fullname + "ann.vcf", ">", output+"/tmp", "&& mv %s" %(output+"/tmp"), fullname + "ann.vcf"]))
     exeCommand(' '.join(
         [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
-         vcfdatabase, uname + "ann.vcf", ">", uname + "annotated.vcf"]))
-    exeCommand(' '.join(['bgzip -c', uname+"annotated.vcf", ">", uname+"annotated.vcf.gz"]))
-    exeCommand(' '.join(['tabix -p', uname+"annotated.vcf.gz"]))
+         vcfdatabase, fullname + "ann.vcf", ">", fullname + "annotated.vcf"]))
+    exeCommand(' '.join(['bgzip -c', fullname+"annotated.vcf", ">", fullname+"annotated.vcf.gz"]))
+    exeCommand(' '.join(['tabix -p', fullname+"annotated.vcf.gz"]))
     oLogger.debug("Added rsID")
 
 
@@ -116,27 +118,28 @@ def ParsingBAM(N, onlySTAR):
 
     #Index Aligned.sortByCoord.out.bam
     os.chdir(STARout)
-    exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, "Aligned.sortedByCoord.out.bam"])))
+    fullname=STARout+"/Aligned.sortedByCoord.out.bam"
+    exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, fullname])))
     oLogger.debug("Indexed:Aligned.sortByCoord.out.bam")
 
     #Convert and sort, index HISAT2.Aligned
     if not onlySTAR:
         os.chdir(HISAT2out)
-        output = "HISAT2.Aligned"
-        exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", output + ".bam"])))
+        fullname = HISAT2out+"/"+"HISAT2.Aligned"
+        exeCommand(shellEscape(' '.join([SAMBAMBA, "view -S -f bam -t", N, output, ">", fullname + ".bam"])))
         oLogger.debug("Convert %s to %s" % (output, output + ".bam"))
 
-        exeCommand(shellEscape(' '.join([SAMBAMBA, "sort -t", N, "-o", output + ".sorted.bam", output + ".bam"])))
-        oLogger.debug("Sort %s" % (output + ".bam"))
-        exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, output + ".sorted.bam"])))
-        oLogger.debug("Indexed: %s" % (output + "sorted.bam.bai"))
+        exeCommand(shellEscape(' '.join([SAMBAMBA, "sort -t", N, "-o", fullname + ".sorted.bam", fullname + ".bam"])))
+        oLogger.debug("Sort %s" % (fullname + ".bam"))
+        exeCommand(shellEscape(' '.join([SAMBAMBA, "index -t", N, fullname+".sorted.bam"])))
+        oLogger.debug("Indexed: %s" % (fullname + "sorted.bam.bai"))
 
 def cleanBam(starDir, hisat2Dir):
     #exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned"])))
     #exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned.bam"])))
     exeCommand(shellEscape(' '.join(["cp", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     exeCommand(shellEscape(' '.join(["rm", "-rf", starDir])))
-    #exeCommand(shellEscape(' '.join(["rm", "-rf", hisat2Dir + "/chr*.vcf"])))
+    exeCommand(shellEscape(' '.join(["rm", "-rf", hisat2Dir])))
     oLogger.debug("Clean:HISAT2.Aligned, HISAT2.Aligned.bam")
 
 ###Main FUNCTION
@@ -252,12 +255,11 @@ if __name__ == '__main__':
     HISAT2out += uname
     job = temporary + uname
     final = output + "/" + uname + ".recode.vcf"
-    try:
-        os.makedirs(TEMP)
-        os.makedirs(STARout)
-        os.makedirs(HISAT2out)
-    except OSError:
-        pass
+    for d in [TEMP, STARout, HISAT2out]:
+        try:
+            os.makedirs(d)
+        except OSError:
+            pass
     try:
         os.makedirs(output)
     except OSError:
