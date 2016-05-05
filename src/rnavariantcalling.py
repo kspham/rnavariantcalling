@@ -73,9 +73,9 @@ def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
 
 def Variant_Calling(bam, dir, threads):
     ###Please put fasta_generate_regions.py in the current directory
-    os.chdir(STARout)
+    #os.chdir(STARout)
     command = ' '.join(["freebayes-parallel",region,threads,
-    "-f", REF, bam, ">",dir+"/"+uname+".vcf"])
+    "-f", REF, STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])
     exeCommand(shellEscape(command))
     oLogger.debug(command)
     oLogger.debug("Done calling variant for:" + bam)
