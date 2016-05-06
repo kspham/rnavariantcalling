@@ -77,6 +77,7 @@ def Variant_Calling(bam, dir, threads):
     command = ' '.join(["freebayes-parallel",region,threads,
     "-f", REF, STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])
     exeCommand(shellEscape(command))
+    exeCommand(shellEscape(' '.join(["cp -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     oLogger.debug(command)
     oLogger.debug("Done calling variant for:" + bam)
 
@@ -137,7 +138,6 @@ def ParsingBAM(N, onlySTAR):
 def cleanBam(starDir, hisat2Dir):
     #exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned"])))
     #exeCommand(shellEscape(' '.join(["rm", "-f", hisat2Dir + "/HISAT2.Aligned.bam"])))
-    exeCommand(shellEscape(' '.join(["cp", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     exeCommand(shellEscape(' '.join(["rm", "-rf", starDir])))
     exeCommand(shellEscape(' '.join(["rm", "-rf", hisat2Dir])))
     oLogger.debug("Clean:HISAT2.Aligned, HISAT2.Aligned.bam")
@@ -155,8 +155,10 @@ if __name__ == '__main__':
     parser.add_argument('--species', '-s', type=str, help='hg19/mm10',required=True)
     parser.add_argument('--vcfdatabase', '-v', type=str, help='vcf database for annotation')
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
+    parser.add_argument('--cleanall', dest='cleanall', action='store_true')
     parser.set_defaults(unset=[1,2,3,4,5,6,7,8,9,10])
     parser.set_defaults(onlySTAR=True)
+    parser.set_defaults(cleanall=False)
     args = parser.parse_args()
 
 
@@ -317,6 +319,10 @@ if __name__ == '__main__':
     # Set command 5 is False due to args.onlySTAR
     if args.onlySTAR:
         stepsDone[5] = "True"
+    
+    # Set command 10 to True due to args.cleanall
+    if not args.cleanall:
+        stepDone[10] = "True"
 
     oLogger.debug("Get job status" + str(stepsDone))
 
