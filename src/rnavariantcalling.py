@@ -75,7 +75,7 @@ def Variant_Calling(bam, dir, threads):
     ###Please put fasta_generate_regions.py in the current directory
     #os.chdir(STARout)
     command = ' '.join(["freebayes-parallel",region,threads,
-    "-f", REF, STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])
+    "-f", REF,"-C 5", STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])
     exeCommand(shellEscape(command))
     exeCommand(shellEscape(' '.join(["cp -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     oLogger.debug(command)
