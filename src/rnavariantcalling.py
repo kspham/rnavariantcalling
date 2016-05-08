@@ -322,7 +322,7 @@ if __name__ == '__main__':
     
     # Set command 10 to True due to args.cleanall
     if not args.cleanall:
-        stepDone[10] = "True"
+        stepsDone[10] = "True"
 
     oLogger.debug("Get job status" + str(stepsDone))
 
