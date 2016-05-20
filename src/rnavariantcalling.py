@@ -74,8 +74,10 @@ def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
 def Variant_Calling(bam, dir, threads):
     ###Please put fasta_generate_regions.py in the current directory
     #os.chdir(STARout)
-    command = ' '.join(["freebayes-parallel",region,threads,
-    "-f", REF,"-C 5", STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])
+    """command = ' '.join(["freebayes-parallel",region,threads,
+    "-f", REF,"-C 5", STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])"""
+    command = ' '.join(["multithread.py", REF, freebayes, bam, region, threads, "|vcffirstheader", "|vcfstreamsort -w 100",
+                                                                                "|vcfuniq >", dir+"/"+uname+".vcf"])
     exeCommand(shellEscape(command))
     exeCommand(shellEscape(' '.join(["cp -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     oLogger.debug(command)
@@ -319,7 +321,7 @@ if __name__ == '__main__':
     # Set command 5 is False due to args.onlySTAR
     if args.onlySTAR:
         stepsDone[5] = "True"
-    
+
     # Set command 10 to True due to args.cleanall
     if not args.cleanall:
         stepsDone[10] = "True"
