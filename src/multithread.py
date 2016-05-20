@@ -2,7 +2,7 @@
 
 from Queue import Queue
 from threading import Thread
-
+from rnavariantcalling import exeCommand
 import os
 import sys
 
@@ -50,7 +50,7 @@ class ThreadPool:
         self.tasks.join()
 
 def call(region):
-    os.system(' '.join([BAYES, "-f", REF, "-C 5","-r", region ,BAM]))
+    exeCommand(' '.join([BAYES, "-f", REF, "-C 5","-r", region ,BAM]))
     """for line in sys.stdin:
         print line"""
 
