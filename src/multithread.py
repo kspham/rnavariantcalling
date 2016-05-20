@@ -13,7 +13,7 @@ import sys
 #CHRO = "hg19chr_coordinates.txt"
 #DIR = "$PWD"
 try:
-	REF, BAYES, BAM, CHRO, THREADS, DIR= sys.argv[1:]
+	REF, BAYES, BAM, CHRO, THREADS= sys.argv[1:]
 except ValueError:
 	print "\nUsage: multithread.py <REFerence> <source of FREEBAYES> <BAMfile> <Chromosome_coordinates> <number of threads> <outDIR> \n"
 
@@ -26,7 +26,7 @@ class Worker(Thread):
         self.tasks = tasks
         self.daemon = True
         self.start()
-    
+
     def run(self):
         while True:
             func, args, kargs = self.tasks.get()
@@ -49,20 +49,20 @@ class ThreadPool:
         """Wait for completion of all the tasks in the queue"""
         self.tasks.join()
 
-def call(chr, len):
-        os.system(' '.join([BAYES, "-f", REF, "-C 5","-r", 
-chr+":0.."+len,BAM, ">", DIR+chr+".vcf"]))
+def call(region):
+        os.system(' '.join([BAYES, "-f", REF, "-C 5","-r", region ,BAM]))
+		for line in sys.stdin:
+			print line
 
 if __name__ == '__main__':
     # 1) Init a Thread pool with the desired number of threads
     pool = ThreadPool(int(THREADS))
-    
+
     data = [line.strip().split() for line in open(CHRO)]
 
     # 2) Add the task to the queue
-    for chr in data:
-        pool.add_task(call,chr[0], chr[1])
-    
+    for region in data:
+        pool.add_task(call,region)
+
     # 3) Wait for completion
     pool.wait_completion()
-
