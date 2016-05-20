@@ -18,10 +18,13 @@ except ValueError:
 	print "\nUsage: multithread.py <REFerence> <source of FREEBAYES> <BAMfile> <Chromosome_coordinates> <number of threads> <outDIR> \n"
 
 def exeCommand(sCommand):
-	process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	process = subprocess.Popen(sCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	out, err = process.communicate()
 	errcode = process.returncode
 	sys.stdout.write(out)
+	print out
+	"""if err:
+		sys.stderr.write(err)"""
 
 def shellEscape(s):
     return s.replace("(", "\(").replace(")", "\)")
