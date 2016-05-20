@@ -51,8 +51,8 @@ class ThreadPool:
 
 def call(region):
     os.system(' '.join([BAYES, "-f", REF, "-C 5","-r", region ,BAM]))
-    for line in sys.stdin:
-        print line
+    """for line in sys.stdin:
+        print line"""
 
 if __name__ == '__main__':
     # 1) Init a Thread pool with the desired number of threads
