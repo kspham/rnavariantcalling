@@ -2,7 +2,7 @@
 
 from Queue import Queue
 from threading import Thread
-from rnavariantcalling import exeCommand
+import subprocess
 import os
 import sys
 
@@ -17,6 +17,27 @@ try:
 except ValueError:
 	print "\nUsage: multithread.py <REFerence> <source of FREEBAYES> <BAMfile> <Chromosome_coordinates> <number of threads> <outDIR> \n"
 
+def exeCommand(sCommand):
+    ###Log command data
+    #oLogger.debug(sCommand)
+
+    ###Get all output data
+    outData, errData = subprocess.Popen(sCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                        close_fds=True).communicate()
+
+    ###Get all response data
+    """for lineData in outData.splitlines():
+        #outStringData = str(lineData)
+        #print("%s" % (outStringData))
+        continue"""
+
+    ###If there is error
+    """if ((errData != None) and (len(errData) > 0)):
+        oLogger.error("Command has error:{0}".format(errData))"""
+
+
+def shellEscape(s):
+    return s.replace("(", "\(").replace(")", "\)")
 
 class Worker(Thread):
     """Thread executing tasks from a given tasks queue"""
@@ -50,7 +71,7 @@ class ThreadPool:
         self.tasks.join()
 
 def call(region):
-    exeCommand(' '.join([BAYES, "-f", REF, "-C 5","-r", region ,BAM]))
+    exeCommand(shellEscape(' '.join([BAYES, "-f", REF, "-C 5","-r", region ,BAM])))
     """for line in sys.stdin:
         print line"""
 
