@@ -58,7 +58,7 @@ if __name__ == '__main__':
     # 1) Init a Thread pool with the desired number of threads
     pool = ThreadPool(int(THREADS))
 
-    data = [line.strip().split() for line in open(CHRO)]
+    data = [line.strip() for line in open(CHRO)]
 
     # 2) Add the task to the queue
     for region in data:
