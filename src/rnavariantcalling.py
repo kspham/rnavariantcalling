@@ -78,7 +78,7 @@ def Variant_Calling(bam, dir, threads, moveBAM):
     "-f", REF,"-C 5", STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])"""
     command = ' '.join(["multithread.py", REF, freebayes, bam, region, threads, "| firstheader > ", dir+"/"+uname+".raw.vcf"])
     exeCommand(shellEscape(command))
-    exeCommand(shellEscape(' '.join(["vcfstreamsort -w 1000", dir+"/"+uname+".raw.vcf", "| vcfuniq >", dir+"/"+uname+".vcf"])))
+    exeCommand(shellEscape(' '.join(["vcfstreamsort -w 1000", dir+"/"+uname+".raw.vcf", "| vcfuniq | vcf-sort >", dir+"/"+uname+".vcf"])))
     if moveBAM:
         exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     else:
