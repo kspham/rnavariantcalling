@@ -71,7 +71,7 @@ def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
         oLogger.debug("Done aligment with HISAT2")
 
 
-def Variant_Calling(bam, dir, threads):
+def Variant_Calling(bam, dir, threads, moveBAM):
     ###Please put fasta_generate_regions.py in the current directory
     #os.chdir(STARout)
     """command = ' '.join(["freebayes-parallel",region,threads,
@@ -79,7 +79,10 @@ def Variant_Calling(bam, dir, threads):
     command = ' '.join(["multithread.py", REF, freebayes, bam, region, threads, "| firstheader > ", dir+"/"+uname+".raw.vcf"])
     exeCommand(shellEscape(command))
     exeCommand(shellEscape(' '.join(["vcfstreamsort -w 1000", dir+"/"+uname+".raw.vcf", "| vcfuniq >", dir+"/"+uname+".vcf"])))
-    exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
+    if moveBAM:
+        exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
+    else:
+        exeCommand(shellEscape(' '.join(["cp -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
     exeCommand(shellEscape("rm %s" %(dir+"/"+uname+".raw.vcf")))
     oLogger.debug(command)
     oLogger.debug("Done calling variant for:" + bam)
@@ -159,9 +162,11 @@ if __name__ == '__main__':
     parser.add_argument('--vcfdatabase', '-v', type=str, help='vcf database for annotation')
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
     parser.add_argument('--cleanall', dest='cleanall', action='store_true')
+    parser.add_argument('--moverBAM', dest='cleanall', action='store_true')
     parser.set_defaults(unset=[1,2,3,4,5,6,7,8,9,10])
     parser.set_defaults(onlySTAR=True)
     parser.set_defaults(cleanall=False)
+    parser.set_defaults(moveBAM=False)
     args = parser.parse_args()
 
 
@@ -280,7 +285,7 @@ if __name__ == '__main__':
 
     command[3] = [ParsingBAM, [args.ThreadsN, args.onlySTAR,]]
 
-    command[4] = [Variant_Calling, ["Aligned.sortedByCoord.out.bam", STARout, args.ThreadsN]]
+    command[4] = [Variant_Calling, ["Aligned.sortedByCoord.out.bam", STARout, args.ThreadsN, args.moveBAM]]
 
     command[5] = [Variant_Calling, ["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
 
