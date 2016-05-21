@@ -76,9 +76,11 @@ def Variant_Calling(bam, dir, threads):
     #os.chdir(STARout)
     """command = ' '.join(["freebayes-parallel",region,threads,
     "-f", REF,"-C 5", STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])"""
-    command = ' '.join(["multithread.py", REF, freebayes, bam, region, threads, "|vcffirstheader > ", dir+"/"+uname+".vcf"])
+    command = ' '.join(["multithread.py", REF, freebayes, bam, region, threads, "| firstheader > ", dir+"/"+uname+".raw.vcf"])
     exeCommand(shellEscape(command))
-    exeCommand(shellEscape(' '.join(["cp -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
+    exeCommand(shellEscape(' '.join(["vcfstreamsort -w 1000", dir+"/"+uname+".raw.vcf", "| vcfuniq >", dir+"/"+uname+".vcf"])))
+    exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
+    exeCommand(shellEscape("rm %s" %(dir+"/"+uname+".raw.vcf")))
     oLogger.debug(command)
     oLogger.debug("Done calling variant for:" + bam)
 
