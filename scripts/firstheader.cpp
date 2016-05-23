@@ -7,7 +7,8 @@ using namespace std;
 int main(){
   bool header = true;
   for (std::string line; std::getline(std::cin, line);){
-      if (line.substr(0, 2)=="##"){
+      if(!line.empty()){
+		  if (line.substr(0, 2)=="##"){
 		if (header)
         cout << line <<endl;
         continue;
@@ -19,5 +20,6 @@ int main(){
           continue;
 	  }
       cout << line << endl;
+	  }
   }
 }
