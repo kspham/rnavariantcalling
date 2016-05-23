@@ -9,11 +9,12 @@ int main(){
   for (std::string line; std::getline(std::cin, line);){
       if(!line.empty()){
 		  if (line.substr(0, 2)=="##"){
-		if (header)
-        cout << line <<endl;
+		if (header) {
+        		cout << line <<endl;
+		}
         continue;
       } else if (line.substr(0,1) == "#"){
-		 if (header){
+	if (header){
           cout << line << endl;
           header = false;
 		 }
