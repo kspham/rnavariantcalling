@@ -12,14 +12,16 @@ mkdir $STAR
 mkdir $HISAT2
 fi
 
-if [ ! -d $STAR/hg19 ] || [ ! -f $STAR/hg19STARindex.tar.gz ]; then
+#if [ ! -d $STAR/hg19 ] || [ ! -f $STAR/hg19STARindex.tar.gz ]; then
+if [ ! -d $STAR/hg19 ]; then
 cd $STAR && wget -O hg19STARindex.tar.gz --no-check-certificate --no-proxy --timestamping 'https://www.encodeproject.org/files/ENCFF069ZCO/@@download/ENCFF069ZCO.tar.gz'
 tar -xvzf hg19STARindex.tar.gz
 rm STARindex.tar.gz
 mv out hg19
 fi
 
-if [ ! -d $STAR/mm10 ] || [ ! -f $STAR/mm10STARindex.tar.gz ]; then
+#if [ ! -d $STAR/mm10 ] || [ ! -f $STAR/mm10STARindex.tar.gz ]; then
+if [ ! -d $STAR/mm10 ]; then
 cd $STAR && wget -O mm10STARindex.tar.gz --no-check-certificate --no-proxy --timestamping 'https://www.encodeproject.org/files/ENCFF518RJA/@@download/ENCFF518RJA.tar.gz'
 tar -xvzf mm10STARindex.tar.gz
 rm mm10STARindex.tar.gz
@@ -54,8 +56,8 @@ fi
 
 if [ ! -f $SCRIPTPATH/lib/All_20151104.vcf.gz ];then
 cd $SCRIPTPATH/lib/
-wget ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b146_GRCh37p13/VCF/All_20150605.vcf.gz
-tabix -p vcf All_20150605.vcf.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/snp/organisms/human_9606_b146_GRCh37p13/VCF/All_20151104.vcf.gz
+tabix -p vcf All_20151104.vcf.gz
 fi
 
 if [ ! -f $SCRIPTPATH/lib/Mus_musculus.vcf.gz ];then
