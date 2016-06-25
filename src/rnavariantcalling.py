@@ -52,7 +52,7 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
                                     "--alignIntronMin", "20",
                                     "--alignIntronMax", "500000",
                                     "--outFilterMismatchNmax", "10",
-                                    "--outSAMtype", "BAM",
+                                    "--outSAMtype", "BAM", "SortedByCoordinate",
                                     "--twopassMode Basic",
                                     "--outReadsUnmapped None",
                                     "--chimSegmentMin 12",
@@ -61,7 +61,7 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
                                     "--alignMatesGapMax 200000",
                                     "--chimSegmentReadGapMax parameter 3",
                                     "--alignSJstitchMismatchNmax 5 -1 5 5",
-                                    "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
+                                    ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
     oLogger.debug("Done aligment with STAR")
 
 #Detect Fusion Genes with STAR-Fusion
