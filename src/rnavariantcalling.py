@@ -318,23 +318,23 @@ if __name__ == '__main__':
 
     command[1] = [STAR_mapping, [reads, iszipped, args.ThreadsN, STARref]]
 
-    command[2] = [HISAT2_mapping, [reads, args.ThreadsN, "HISAT2.Aligned", len(reads) > 1, args.onlySTAR ]]
+    command[2] = [FusionGeneDetect, [STARout, fusionOutdir]]
 
-    command[3] = [ParsingBAM, [args.ThreadsN, args.onlySTAR,]]
+    command[3] = [HISAT2_mapping, [reads, args.ThreadsN, "HISAT2.Aligned", len(reads) > 1, args.onlySTAR ]]
 
-    command[4] = [Variant_Calling, ["Aligned.sortedByCoord.out.bam", STARout, args.ThreadsN, args.moveBAM]]
+    command[4] = [ParsingBAM, [args.ThreadsN, args.onlySTAR,]]
 
-    command[5] = [Variant_Calling, ["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
+    command[5] = [Variant_Calling, ["Aligned.sortedByCoord.out.bam", STARout, args.ThreadsN, args.moveBAM]]
 
-    command[6] = [filter1, [args.onlySTAR]]
+    command[6] = [Variant_Calling, ["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
 
-    command[7] = [filter2, []]
+    command[7] = [filter1, [args.onlySTAR]]
 
-    command[8] = [snpEff, [args.species]]
+    command[8] = [filter2, []]
 
-    command[9] = [snpSift, []]
+    command[9] = [snpEff, [args.species]]
 
-    command[10] = [FusionGeneDetect, [STARout, fusionOutdir]]
+    command[10] = [snpSift, []]
 
     command[11] = [cleanBam, [STARout, HISAT2out]]
 
