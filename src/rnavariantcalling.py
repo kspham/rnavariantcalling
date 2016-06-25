@@ -192,7 +192,7 @@ if __name__ == '__main__':
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
     parser.add_argument('--cleanall', dest='cleanall', action='store_true')
     parser.add_argument('--moverBAM', dest='cleanall', action='store_true')
-    parser.add_argument('--fusion-Outdir','-F' help='output directory for fusion gene detection', type=str)
+    parser.add_argument('--fusion-Outdir','-F',help='output directory for fusion gene detection', type=str)
     parser.set_defaults(unset=[1,2,3,4,5,6,7,8,9,10])
     parser.set_defaults(onlySTAR=True)
     parser.set_defaults(cleanall=False)
