@@ -232,7 +232,7 @@ if __name__ == '__main__':
         #vcfdatabase = cfg['lib']['mm10vcfdatabase']
 
     STAR = cfg['tools']['STAR']
-    STAR_Fusion = cfg['tools']['STAR-Fusion']
+    STAR_Fusion = cfg['tools']['STAR_Fusion']
     hisat2 = cfg['tools']['hisat2']
     vcftools = cfg['tools']['vcftools']
     vcfconcat = cfg['tools']['vcfconcat']
