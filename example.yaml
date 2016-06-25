@@ -5,7 +5,7 @@ lib:
  mm10editsite: path/lib/mouse_edit.txt
  hg19REF: path/lib/hg19.fa
  mm10REF: path/lib/mm10.fa
- hg19STARref: path/STARref/GRCh37_gencode_v19/ref_genome.fa.star.idx
+ hg19STARref: path/STARref/GRCh37_gencode_v19_CTAT_lib/ref_genome.fa.star.idx
  mm10STARref: path/STARref/mm10
  hg19HISAT2ref: path/HISAT2ref/hg19
  mm10HISAT2ref: path/HISAT2ref/mm10
