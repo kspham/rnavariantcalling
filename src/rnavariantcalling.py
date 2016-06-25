@@ -23,7 +23,7 @@ def exeCommand(sCommand):
     oLogger.debug(sCommand)
 
     ###Get all output data
-    outData, errData = subprocess.Popen(sCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+    outData, errData = subprocess.Popen(sCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                         close_fds=True).communicate()
 
     ###Get all response data
@@ -36,6 +36,7 @@ def exeCommand(sCommand):
     if ((errData != None) and (len(errData) > 0)):
         oLogger.error("Command has error:{0}".format(errData))
 
+    return errData
 
 def shellEscape(s):
     return s.replace("(", "\(").replace(")", "\)")
@@ -45,13 +46,40 @@ def shellEscape(s):
 def STAR_mapping(reads, ReadIsGzipped, N, dir):
     oLogger.debug("Run STAR mapping with genome reference %s" %(dir))
     os.chdir(STARout)
-    exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N, "--genomeDir", dir, "--readFilesIn",
-                                     ' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax",
-                                     "500000", "--outFilterMismatchNmax", "10",
-                                     "--outSAMtype", "BAM", "SortedByCoordinate",
-                                     ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
+    exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N,
+                                    "--genomeDir", dir,
+                                    "--readFilesIn", ' '.join([read for read in reads]),
+                                    "--alignIntronMin", "20",
+                                    "--alignIntronMax", "500000",
+                                    "--outFilterMismatchNmax", "10",
+                                    "--outSAMtype", "BAM",
+                                    "--twopassMode Basic",
+                                    "--outReadsUnmapped None",
+                                    "--chimSegmentMin 12",
+                                    "--chimJunctionOverhangMin 12",
+                                    "--alignSJDBoverhangMin 10",
+                                    "--alignMatesGapMax 200000",
+                                    "--alignIntronMax 200000",
+                                    "--chimSegmentReadGapMax parameter 3",
+                                    "--alignSJstitchMismatchNmax 5 -1 5 5",
+                                    "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
     oLogger.debug("Done aligment with STAR")
 
+#Detect Fusion Genes with STAR-Fusion
+def FusionGeneDetect(STARdir, fusionOutdir):
+
+    """
+    return : fusion genes informations contained in fusionOutdir
+    detail : The output from STAR-Fusion is found as a tab-delimited file named 'star-fusion.fusion_candidates.final.abridged'
+    """
+
+    junctionPath = "/".join([STARdir, "Chimeric.out.junction"])
+    cmd = " ".join([STAR_Fusion,
+                    "--genome_lib_dir", CTAT_dir,
+                    "-J", junctionPath,
+                    "--output_dir", fusionOutdir])
+    stderr = exeCommand(shellEscape(cmd))
+    oLogger.debug(stderr)
 
 #Mapping with HISAT2
 def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
@@ -148,6 +176,7 @@ def cleanBam(starDir, hisat2Dir):
     exeCommand(shellEscape(' '.join(["rm", "-rf", hisat2Dir])))
     oLogger.debug("Clean:HISAT2.Aligned, HISAT2.Aligned.bam")
 
+
 ###Main FUNCTION
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Automatically generate SNPs variant for give RNA short reads')
@@ -163,6 +192,7 @@ if __name__ == '__main__':
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
     parser.add_argument('--cleanall', dest='cleanall', action='store_true')
     parser.add_argument('--moverBAM', dest='cleanall', action='store_true')
+    parser.add_argument('--fusion-Outdir','-F' help='output directory for fusion gene detection', type=str)
     parser.set_defaults(unset=[1,2,3,4,5,6,7,8,9,10])
     parser.set_defaults(onlySTAR=True)
     parser.set_defaults(cleanall=False)
@@ -180,6 +210,7 @@ if __name__ == '__main__':
     temporary = cfg['folder']['temporary']
     STARout = cfg['folder']['STARout']
     HISAT2out = cfg['folder']['HISAT2out']
+    CTAT_dir = cfg['folder']['CTAT_dir']
 
     #hg19
     if args.species == 'hg19':
@@ -201,6 +232,7 @@ if __name__ == '__main__':
         #vcfdatabase = cfg['lib']['mm10vcfdatabase']
 
     STAR = cfg['tools']['STAR']
+    STAR_Fusion = cfg['tools']['STAR-Fusion']
     hisat2 = cfg['tools']['hisat2']
     vcftools = cfg['tools']['vcftools']
     vcfconcat = cfg['tools']['vcfconcat']
@@ -259,6 +291,11 @@ if __name__ == '__main__':
     else:
         output = os.path.abspath(os.environ['PWD'])
 
+    if not args.fusion_Outdir:
+        fusionOutdir = "/".join([output, uname, "fusion" ])
+    else:
+        fusionOutdir = args.fusion_Outdir
+
     #Main program
 
     TEMP += uname
@@ -296,7 +333,11 @@ if __name__ == '__main__':
     command[8] = [snpEff, [args.species]]
 
     command[9] = [snpSift, []]
-    command[10] = [cleanBam, [STARout, HISAT2out]]
+
+    command[10] = [FusionGeneDetect, [STARout, fusionOutdir]]
+
+    command[11] = [cleanBam, [STARout, HISAT2out]]
+
     oLogger.debug("Setup commands")
 
     # Initial steps

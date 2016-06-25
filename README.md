@@ -1,6 +1,6 @@
 # RNAvariantcalling
 
-RNAvariantcalling is a powerful tool for calling variants from RNA sequences to provide high quality variants, which were filter by a recently-published database about editing sites in human genome. 
+RNAvariantcalling is a powerful tool for calling variants from RNA sequences to provide high quality variants, which were filter by a recently-published database about editing sites in human genome.
 
   - RNA sequences were mapped by 2 mapper STAR and HISAT2, which can handle splice junction problem very well
   - Variants were called by Freebayes, then only variants called from both STAR and HISAT2 were stored for the next step
@@ -15,8 +15,8 @@ ptdtan@gmail.com
 
 RNAvariantcalling uses a number of materials to work properly:
 
-* [hg19 genome indexed by STAR] 
-* [hg19 genome indexed by HISAT2] 
+* [hg19 genome indexed by STAR]
+* [hg19 genome indexed by HISAT2]
 * [hg19 genome un-indexed] - for variant calling
 * [hg19 gene annotation file]
 * Python 2.7+
@@ -28,10 +28,12 @@ RNAvariantcalling uses a number of materials to work properly:
 These will be downloaded automatically at the very first time you run rnavariantcalling.
 
 And also, rnavariantcalling need these tools below have to be installed on your computer:
-* samtools 
+* samtools
 * tabix
 * bgzip
-
+* GNU-parallel
+* Set::IntervalTree (perl)
+* URI::Escape (perl)
 ### Installation
 ```
 1. $git clone https://github.com/kspham/rnavariantcalling.git
@@ -45,23 +47,23 @@ At the very first time you run rnavariantcalling, you have to download the index
 4.Done! Now you rnavariantcalling can work properly.
 
 ```
-### Usage 
+### Usage
 
 ```
 $ rnavariantcalling.py [-h] [--ThreadsN N] [--reads read1 read2 ... readN] [--outdir OUTDIR] --config yamlFile
 ```
-    -h, --helps help message and exit 
-    --reads READS [READS ...], -U READS [READS ...] Input RNA reads 
-    ---outdir OUTDIR, -o OUTDIR Where the final result will be stored 
+    -h, --helps help message and exit
+    --reads READS [READS ...], -U READS [READS ...] Input RNA reads
+    ---outdir OUTDIR, -o OUTDIR Where the final result will be stored
     --ThreadsN N Number of threads
     --config yamlFile configuration file as yaml format
 ### Example
-    - Paired-ends reads: 
+    - Paired-ends reads:
 ```
 $ rnavariantcalling.py --ThreadsN 32 --reads 1.fastq.gz 2.fastq.gz -o /output/directory/ --config /path/to/your/config.yaml
 ```
 
-    -Single-end read: 
+    -Single-end read:
 ```
 $ rnavariantcalling.py --ThreadsN 32 -U unpaired_read.fastq.gz -o /output/directory/ --config /path/to/your/config.yaml
 ```

@@ -5,7 +5,7 @@ lib:
  mm10editsite: path/lib/mouse_edit.txt
  hg19REF: path/lib/hg19.fa
  mm10REF: path/lib/mm10.fa
- hg19STARref: path/STARref/hg19
+ hg19STARref: path/STARref/GRCh37_gencode_v19/ref_genome.fa.star.idx
  mm10STARref: path/STARref/mm10
  hg19HISAT2ref: path/HISAT2ref/hg19
  mm10HISAT2ref: path/HISAT2ref/mm10
@@ -14,7 +14,7 @@ lib:
  mm10vcfdatabase: path/lib/Mus_musculus.vcf.gz
  hg19region: path/lib/hg19.region
  mm10region: path/lib/mm10.region
-
+ CTAT_dir: path/STARref/GRCh37_gencode_v19
 tools:
  freebayes: freebayes
  STAR: STAR
@@ -25,8 +25,10 @@ tools:
  snpeff: path/bin/snpEff/snpEff.jar
  snpsift: path/bin/snpEff/SnpSift.jar
  java: java
+ STAR_Fusion: STAR-Fusion
 folder:
  STARout: path/STAR/
  HISAT2out: path/HISAT2/
  tmp: path/tmp/
  temporary: path/temporary/
+
