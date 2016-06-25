@@ -59,7 +59,6 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
                                     "--chimJunctionOverhangMin 12",
                                     "--alignSJDBoverhangMin 10",
                                     "--alignMatesGapMax 200000",
-                                    "--alignIntronMax 200000",
                                     "--chimSegmentReadGapMax parameter 3",
                                     "--alignSJstitchMismatchNmax 5 -1 5 5",
                                     "SortedByCoordinate", ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
