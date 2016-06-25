@@ -210,7 +210,7 @@ if __name__ == '__main__':
     temporary = cfg['folder']['temporary']
     STARout = cfg['folder']['STARout']
     HISAT2out = cfg['folder']['HISAT2out']
-    CTAT_dir = cfg['folder']['CTAT_dir']
+    CTAT_dir = cfg['lib']['CTAT_dir']
 
     #hg19
     if args.species == 'hg19':
