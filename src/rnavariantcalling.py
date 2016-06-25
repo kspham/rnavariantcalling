@@ -325,7 +325,7 @@ if __name__ == '__main__':
 
     command[5] = [Variant_Calling, ["Aligned.sortedByCoord.out.bam", STARout, args.ThreadsN, args.moveBAM]]
 
-    command[6] = [Variant_Calling, ["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN]]
+    command[6] = [Variant_Calling, ["HISAT2.Aligned.sorted.bam", HISAT2out, args.ThreadsN, args.moveBAM]]
 
     command[7] = [filter1, [args.onlySTAR]]
 
@@ -366,7 +366,7 @@ if __name__ == '__main__':
 
     # Set command 5 is False due to args.onlySTAR
     if args.onlySTAR:
-        stepsDone[5] = "True"
+        stepsDone[6] = "True"
 
     # Set command 10 to True due to args.cleanall
     if not args.cleanall:
