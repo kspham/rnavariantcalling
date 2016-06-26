@@ -44,9 +44,9 @@ def shellEscape(s):
 
 #Mapping with STAR
 def STAR_mapping(reads, ReadIsGzipped, N, dir):
-    oLogger.debug("Run STAR mapping with genome reference %s" %(dir))
+    oLogger.info("Run STAR mapping with genome reference %s" %(dir))
     os.chdir(STARout)
-    exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N,
+    stderr = exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N,
                                     "--genomeDir", dir,
                                     "--readFilesIn", ' '.join([read for read in reads]),
                                     "--alignIntronMin", "20",
@@ -62,7 +62,8 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir):
                                     "--chimSegmentReadGapMax parameter 3",
                                     "--alignSJstitchMismatchNmax 5 -1 5 5",
                                     ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
-    oLogger.debug("Done aligment with STAR")
+    oLogger.debug(stderr)
+    oLogger.info("Done aligment with STAR")
 
 #Detect Fusion Genes with STAR-Fusion
 def FusionGeneDetect(STARdir, fusionOutdir):
@@ -104,12 +105,12 @@ def Variant_Calling(bam, dir, threads, moveBAM):
     """command = ' '.join(["freebayes-parallel",region,threads,
     "-f", REF,"-C 5", STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])"""
     command = ' '.join(["multithread.py", REF, freebayes, bam, region, threads, "| firstheader > ", dir+"/"+uname+".raw.vcf"])
-    exeCommand(shellEscape(command))
+    oLogger.debug(exeCommand(shellEscape(command)))
     exeCommand(shellEscape(' '.join(["vcfstreamsort -w 1000", dir+"/"+uname+".raw.vcf", "| vcfuniq | vcf-sort >", dir+"/"+uname+".vcf"])))
     if moveBAM:
-        exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
+        oLogger.debug(exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output]))))
     else:
-        exeCommand(shellEscape(' '.join(["cp -f", STARout+"/Aligned.sortedByCoord.out.bam*", output])))
+        oLogger.debug(exeCommand(shellEscape(' '.join(["cp -f", STARout+"/Aligned.sortedByCoord.out.bam*", output]))))
     exeCommand(shellEscape("rm %s" %(dir+"/"+uname+".raw.vcf")))
     oLogger.debug(command)
     oLogger.debug("Done calling variant for:" + bam)
@@ -131,21 +132,21 @@ def filter2():
 def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.82'}):
     os.chdir(output)
     fullname = output+"/"+uname
-    exeCommand(' '.join([java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
-                         names[ref], fullname + ".recode.vcf", ">", fullname + "ann.vcf"]))
-    oLogger.debug("Done annotation!")
+    oLogger.debug(exeCommand(' '.join([java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
+                         names[ref], fullname + ".recode.vcf", ">", fullname + "ann.vcf"])))
+    oLogger.info("Done annotation!")
 
 
 def snpSift():
     os.chdir(output)
     fullname = output+"/"+uname
     exeCommand(' '.join(["sed 's/^chr//'", fullname + "ann.vcf", ">", output+"/tmp", "&& mv %s" %(output+"/tmp"), fullname + "ann.vcf"]))
-    exeCommand(' '.join(
+    oLogger.debug(exeCommand(' '.join(
         [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
-         vcfdatabase, fullname + "ann.vcf", ">", fullname + "annotated.vcf"]))
-    exeCommand(' '.join(['bgzip -c', fullname+"annotated.vcf", ">", fullname+"annotated.vcf.gz"]))
-    exeCommand(' '.join(['tabix -p','vcf', fullname+"annotated.vcf.gz"]))
-    oLogger.debug("Added rsID")
+         vcfdatabase, fullname + "ann.vcf", ">", fullname + "annotated.vcf"])))
+    oLogger.debug(exeCommand(' '.join(['bgzip -c', fullname+"annotated.vcf", ">", fullname+"annotated.vcf.gz"])))
+    oLogger.debug(exeCommand(' '.join(['tabix -p','vcf', fullname+"annotated.vcf.gz"])))
+    oLogger.info("Added rsID")
 
 
 def ParsingBAM(N, onlySTAR):
@@ -368,9 +369,9 @@ if __name__ == '__main__':
     if args.onlySTAR:
         stepsDone[6] = "True"
 
-    # Set command 10 to True due to args.cleanall
+    # Set command 11 to True due to args.cleanall
     if not args.cleanall:
-        stepsDone[10] = "True"
+        stepsDone[11] = "True"
 
     oLogger.debug("Get job status" + str(stepsDone))
 
