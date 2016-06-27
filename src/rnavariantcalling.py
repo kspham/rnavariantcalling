@@ -103,7 +103,7 @@ def Variant_Calling(bam, dir, threads, moveBAM):
     #os.chdir(STARout)
     """command = ' '.join(["freebayes-parallel",region,threads,
     "-f", REF,"-C 5", STARout+"/"+bam, ">",dir+"/"+uname+".vcf"])"""
-    command = ' '.join(["multithread.py", REF, freebayes, bam, region, threads, "| firstheader > ", dir+"/"+uname+".raw.vcf"])
+    command = ' '.join(["freebayes-parallel", region, threads, "-f", REF, "-C 5", bam , "| firstheader > ", dir+"/"+uname+".raw.vcf"])
     exeCommand(shellEscape(command))
     exeCommand(shellEscape(' '.join(["vcfstreamsort -w 1000", dir+"/"+uname+".raw.vcf", "| vcfuniq | vcf-sort >", dir+"/"+uname+".vcf"])))
     if moveBAM:
