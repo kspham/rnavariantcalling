@@ -3,7 +3,7 @@ lib:
  mm10chro: path/lib/mm10chr_coordinates.txt
  hg19editsite: path/lib/human_edit.txt
  mm10editsite: path/lib/mouse_edit.txt
- hg19REF: path/lib/hg19.fa
+ hg19REF: path/STARref/GRCh37_gencode_v19_CTAT_lib/ref_genome.fa
  mm10REF: path/lib/mm10.fa
  hg19STARref: path/STARref/GRCh37_gencode_v19_CTAT_lib/ref_genome.fa.star.idx
  mm10STARref: path/STARref/mm10
