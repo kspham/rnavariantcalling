@@ -1,8 +1,8 @@
 #!/bin/bash 
-IDX=$1
+REGION=$1
 REF=$2
 BAM=$3
 OUT=$4
 THREADS=$5
 
-freebayes-parallel <(fasta_generate_regions.py $IDX 100000) $THREADS -f $REF $BAM 2>&1 > $OUT
+freebayes-parallel $REGION $THREADS -f $REF $BAM 2>&1 > $OUT
