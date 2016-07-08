@@ -43,11 +43,10 @@ def shellEscape(s):
 
 
 #Mapping with STAR
-def STAR_mapping(reads, ReadIsGzipped, N, dir, isDetectingFusion):
+def STAR_mapping(reads, ReadIsGzipped, N, dir):
     oLogger.info("Run STAR mapping with genome reference %s" %(dir))
     os.chdir(STARout)
-    if isDetectingFusion:
-        stderr = exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N,
+    stderr = exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N,
                                     "--genomeDir", dir,
                                     "--readFilesIn", ' '.join([read for read in reads]),
                                     "--alignIntronMin", "20",
@@ -63,12 +62,6 @@ def STAR_mapping(reads, ReadIsGzipped, N, dir, isDetectingFusion):
                                     "--chimSegmentReadGapMax parameter 3",
                                     "--alignSJstitchMismatchNmax 5 -1 5 5",
                                     ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
-    else:
-        stderr = exeCommand(shellEscape(' '.join([STAR, "--runThreadN", N, "--genomeDir", dir, "--readFilesIn",
-                                     ' '.join([read for read in reads]), "--alignIntronMin", "20", "--alignIntronMax",
-                                     "500000", "--outFilterMismatchNmax", "10",
-                                     "--outSAMtype", "BAM", "SortedByCoordinate",
-                                     ''.join(["--readFilesCommand gunzip -c" for i in range(1) if ReadIsGzipped])])))
     oLogger.debug(stderr)
     oLogger.info("Done aligment with STAR")
 
@@ -194,14 +187,11 @@ if __name__ == '__main__':
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
     parser.add_argument('--cleanall', dest='cleanall', action='store_true')
     parser.add_argument('--moverBAM', dest='cleanall', action='store_true')
-    parser.add_argument('--detectFusion', dest='isDetectingFusion', action='store_true')
     parser.add_argument('--fusion-Outdir','-F',help='output directory for fusion gene detection', type=str)
     #parser.set_defaults(unset=[1,2,3,4,5,6,7,8,9,10])
     parser.set_defaults(onlySTAR=True)
     parser.set_defaults(cleanall=False)
     parser.set_defaults(moveBAM=False)
-    parser.set_defaults(detectFusion=False)
-
     args = parser.parse_args()
 
 
@@ -321,7 +311,7 @@ if __name__ == '__main__':
 
     command = {}
 
-    command[1] = [STAR_mapping, [reads, iszipped, args.ThreadsN, STARref, args.detectFusion]]
+    command[1] = [STAR_mapping, [reads, iszipped, args.ThreadsN, STARref]]
 
     command[2] = [FusionGeneDetect, [STARout, fusionOutdir]]
 
@@ -377,10 +367,6 @@ if __name__ == '__main__':
     # Set command 11 to True due to args.cleanall
     if not args.cleanall:
         stepsDone[11] = "True"
-    
-    # Set command 11 to True due to args.detectFusion
-    if not args.detectFusion:
-        stepsDone[2] = "True"
 
     oLogger.debug("Get job status" + str(stepsDone))
 
