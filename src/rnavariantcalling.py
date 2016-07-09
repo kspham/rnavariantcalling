@@ -100,7 +100,8 @@ def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
 
 
 def Variant_Calling(bam, dir, threads, moveBAM):
-    command = ' '.join(['fby', region , REF, bam, dir+"/"+uname+".vcf", threads])
+    fullname=STARout+"/Aligned.sortedByCoord.out.bam"
+    command = ' '.join(['fby', region , REF, fullname, dir+"/"+uname+".vcf", threads])
     oLogger.debug(exeCommand(command))
     if moveBAM:
         oLogger.debug(exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output]))))
