@@ -27,7 +27,7 @@ tools:
  snpeff: path/bin/snpEff/snpEff.jar
  snpsift: path/bin/snpEff/SnpSift.jar
  java: java
- STAR_Fusion: STAR-Fusion
+ STAR_Fusion: /usr/local/STAR-Fusion/STAR-Fusion
 folder:
  STARout: path/STAR/
  HISAT2out: path/HISAT2/
