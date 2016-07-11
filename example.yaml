@@ -4,9 +4,9 @@ lib:
  hg19editsite: path/lib/human_edit.txt
  mm10editsite: path/lib/mouse_edit.txt
  hg19REF: path/STARref/GRCh37_gencode_v19_CTAT_lib/ref_genome.fa
- mm10REF: path/lib/mm10.fa
+ mm10REF: path/STARref/MouseGencodeM9/ref_genome.fa
  hg19STARref: path/STARref/GRCh37_gencode_v19_CTAT_lib/ref_genome.fa.star.idx
- mm10STARref: path/STARref/mm10
+ mm10STARref: path/STARref/MouseGencodeM9/ref_genome.fa.star.idx
  hg19HISAT2ref: path/HISAT2ref/hg19
  mm10HISAT2ref: path/HISAT2ref/mm10
  PERL5LIB: path/bin/vcftools_0.1.13/perl
@@ -31,4 +31,3 @@ folder:
  HISAT2out: path/HISAT2/
  tmp: path/tmp/
  temporary: path/temporary/
-
