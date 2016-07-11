@@ -87,6 +87,7 @@ def main():
     sCommand = createCommand(prefixCommand, arrFirstRegionTMP, False)
     arrListParam.append(sCommand)
 
+    """
     if (debugMode > 0):
         print("Prepare chrM region for freebayes")
 
@@ -109,6 +110,7 @@ def main():
         if (len(sCommand) > 0):
             arrListParam.append(sCommand)
         arrRegionTMP.clear()
+    """
 
     if (debugMode > 0):
         print("Prepare other region for freebayes")
