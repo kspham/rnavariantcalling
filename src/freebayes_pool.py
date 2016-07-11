@@ -94,7 +94,8 @@ def main():
             arrListParam.append(sCommand)
             arrRegionTMP.clear()
         else:
-            arrRegionTMP.add(line)
+            if(len(line) > 0):
+                arrRegionTMP.add(line)
     oRegionFile.close()
 
     if(len(arrRegionTMP) > 0):
