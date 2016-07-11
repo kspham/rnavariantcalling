@@ -18,7 +18,8 @@ import os
 ###Parse command line options
 parserInstance = optparse.OptionParser(usage="usage: python %prog [options]", version="FreeBayes Pool 1.0 - BioTuring")
 parserInstance.add_option("-p", "--path", default="freebayes", help="FreeBayes bin path")
-parserInstance.add_option("-r", "--reg", default="chr1:0-1", help="Region file path")
+parserInstance.add_option("-r", "--reg", default="chr1:0-1", help="Region ignore chrM file path")
+parserInstance.add_option("-m", "--regm", default="chrM:577-647", help="Region chrM file path")
 parserInstance.add_option("-c", "--min", default="5", help="Min alternate count")
 parserInstance.add_option("-b", "--bam", default="", help="Bam file")
 parserInstance.add_option("-f", "--ref", default="", help="Fasta reference file path")
@@ -32,6 +33,7 @@ parserInstance.parse_args()
 debugMode = int(parserInstance.values.debug)
 freebayesBinPath = str(parserInstance.values.path)
 regionFilePath = str(parserInstance.values.reg)
+regionChrMFilePath = str(parserInstance.values.regm)
 minAlterbateCount = int(parserInstance.values.min)
 bamFilePath = str(parserInstance.values.bam)
 refFilePath = str(parserInstance.values.ref)
@@ -58,9 +60,11 @@ def executeCommand(sCommand):
 
 ###Create freebayes command
 def createCommand(prefixCommand, arrRegionTMP, ignoreHeader):
-    sCommand = prefixCommand + " --region %s" % (','.join(list(arrRegionTMP)))
-    if(ignoreHeader == True):
-        sCommand = sCommand + " --no-header"
+    sCommand = ""
+    if(len(arrRegionTMP) > 0):
+        sCommand = prefixCommand + " --region %s" % (','.join(list(arrRegionTMP)))
+        if(ignoreHeader == True):
+            sCommand = sCommand + " --no-header"
     return sCommand
 
 ###Logic business
@@ -77,21 +81,46 @@ def main():
     if (debugMode > 0):
         print("Create VCF HEADER")
 
+    arrRegionTMP = set()
     arrFirstRegionTMP = set()
     arrFirstRegionTMP.add('chr1:0-1')
     sCommand = createCommand(prefixCommand, arrFirstRegionTMP, False)
     arrListParam.append(sCommand)
 
     if (debugMode > 0):
-        print("Prepare region for freebayes")
+        print("Prepare chrM region for freebayes")
 
-    arrRegionTMP = set()
+    ###USE for CHR-M
+    oRegionChrMFile = open(regionChrMFilePath)
+    for line in oRegionChrMFile:
+        line = line.strip()
+        if (len(arrRegionTMP) == 13):
+            sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+            if(len(sCommand) > 0):
+                arrListParam.append(sCommand)
+            arrRegionTMP.clear()
+        else:
+            if (len(line) > 0):
+                arrRegionTMP.add(line)
+    oRegionChrMFile.close()
+
+    if (len(arrRegionTMP) > 0):
+        sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+        if (len(sCommand) > 0):
+            arrListParam.append(sCommand)
+        arrRegionTMP.clear()
+
+    if (debugMode > 0):
+        print("Prepare other region for freebayes")
+
+    ###USE for other CHRM
     oRegionFile = open(regionFilePath)
     for line in oRegionFile:
         line = line.strip()
         if (len(arrRegionTMP) == numCount):
             sCommand = createCommand(prefixCommand, arrRegionTMP, True)
-            arrListParam.append(sCommand)
+            if (len(sCommand) > 0):
+                arrListParam.append(sCommand)
             arrRegionTMP.clear()
         else:
             if(len(line) > 0):
@@ -100,7 +129,8 @@ def main():
 
     if(len(arrRegionTMP) > 0):
         sCommand = createCommand(prefixCommand, arrRegionTMP, True)
-        arrListParam.append(sCommand)
+        if (len(sCommand) > 0):
+            arrListParam.append(sCommand)
         arrRegionTMP.clear()
 
     if (debugMode > 0):
