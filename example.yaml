@@ -14,6 +14,8 @@ lib:
  mm10vcfdatabase: path/lib/Mus_musculus.vcf.gz
  hg19region: path/lib/hg19.region
  mm10region: path/lib/mm10.region
+ chrMhg19region: path/lib/hg19.chrM.region
+ chrMmm10region: path/lib/mm10.chrM.region
  CTAT_dir: path/STARref/GRCh37_gencode_v19_CTAT_lib
 tools:
  freebayes: freebayes

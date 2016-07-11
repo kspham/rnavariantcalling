@@ -102,7 +102,8 @@ def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
 def Variant_Calling(bam, dir, threads, moveBAM):
     fullpathBAM = "%s/%s" %(dir,bam)
     fullpathVCF = "%s/%s.vcf" %(dir,uname)
-    command = 'freebayes_pool.py --path freebayes --thread %s --num 50 --reg %s --ref %s --min 2 --bam %s --out %s.tmp1' % (threads, region, REF, fullpathBAM, fullpathVCF)
+    command = 'freebayes_pool.py --path freebayes --thread %s --num 50 --reg %s \
+                                --regm %s --ref %s --min 2 --bam %s --out %s.tmp1' % (threads, region, chrMregion, REF, fullpathBAM, fullpathVCF)
     oLogger.debug(exeCommand(command))
     oLogger.debug(exeCommand("sed '/^$/d' %s.tmp1 > %s.tmp" % (fullpathVCF, fullpathVCF)))
     oLogger.debug(exeCommand("vcfstreamsort < %s.tmp > %s" % (fullpathVCF, fullpathVCF)))
@@ -220,6 +221,7 @@ if __name__ == '__main__':
         editsite = cfg['lib']['hg19editsite']
         #vcfdatabase = cfg['lib']['hg19vcfdatabase']
         region=cfg['lib']['hg19region']
+        chrMregion=cfg['lib']['chrMhg19region']
     else:
         #mm10
         STARref = cfg['lib']['mm10STARref']
@@ -228,6 +230,7 @@ if __name__ == '__main__':
         CHRO = cfg['lib']['mm10chro']
         editsite = cfg['lib']['mm10editsite']
         region=cfg['lib']['mm10region']
+        chrMregion=cfg['lib']['chrMmm10region']
         #vcfdatabase = cfg['lib']['mm10vcfdatabase']
 
     STAR = cfg['tools']['STAR']
