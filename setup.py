@@ -8,8 +8,8 @@ setup(name='rnavariantcalling',
       author_email='ptdtan@gmail.com',
       license='MIT',
       packages=['rnavariantcalling'],
-      
+
       install_requires=['pyyaml'],
       scripts=['src/multithread.py', 'src/rnavariantcalling.py', 'scripts/filter', 'scripts/filter2', 'scripts/filter3',
-	  			'scripts/vcffirstheader', 'scripts/vcfstreamsort', 'scripts/vcfuniq', 'scripts/firstheader', 'scripts/fby'],
+	  			'scripts/vcffirstheader', 'scripts/vcfstreamsort', 'scripts/vcfuniq', 'scripts/firstheader', 'scripts/fby', 'src/freebayes_pool.py'],
       zip_safe=False)

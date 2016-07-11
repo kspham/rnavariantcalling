@@ -100,9 +100,12 @@ def HISAT2_mapping(reads, N, output, pairend, onlySTAR):
 
 
 def Variant_Calling(bam, dir, threads, moveBAM):
-    fullname=STARout+"/Aligned.sortedByCoord.out.bam"
-    command = ' '.join(['fby', region , REF, fullname, dir+"/"+uname+".vcf", threads])
+    fullpathBAM = "%s/%s" %(dir,bam)
+    fullpathVCF = "%s/%s.vcf" %(dir,uname)
+    command = 'freebayes_pool.py --path freebayes --thread %s --num 50 --reg %s --ref %s --min 2 --bam %s --out %s.tmp1' % (threads, region, REF, fullpathBAM, fullpathVCF)
     oLogger.debug(exeCommand(command))
+    oLogger.debug(exeCommand("sed '/^$/d' %s.tmp1 > %s.tmp" % (fullpathVCF, fullpathVCF)))
+    oLogger.debug(exeCommand("vcfstreamsort < %s.tmp > %s" % (fullpathVCF, fullpathVCF)))
     if moveBAM:
         oLogger.debug(exeCommand(shellEscape(' '.join(["mv -f", STARout+"/Aligned.sortedByCoord.out.bam*", output]))))
     else:
