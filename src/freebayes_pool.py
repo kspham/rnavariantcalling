@@ -25,7 +25,7 @@ parserInstance.add_option("-b", "--bam", default="", help="Bam file")
 parserInstance.add_option("-f", "--ref", default="", help="Fasta reference file path")
 parserInstance.add_option("-t", "--thread", default="4", help="Thread number")
 parserInstance.add_option("-d", "--debug", default="0", help="Debug mode")
-parserInstance.add_option("-o", "--out", default="", help="Output VCF file")
+parserInstance.add_option("-o", "--out", default="./out.vcf", help="Output VCF file")
 parserInstance.add_option("-n", "--num", default="50", help="Region chunk size")
 parserInstance.parse_args()
 
