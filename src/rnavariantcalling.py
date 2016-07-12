@@ -138,14 +138,15 @@ def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.82'}):
 
 
 def snpSift():
-    os.chdir(output)
     fullname = output+"/"+uname
+    final = "%s/final.annotated.vcf" %(output)
     exeCommand(' '.join(["sed 's/^chr//'", fullname + "ann.vcf", ">", output+"/tmp", "&& mv %s" %(output+"/tmp"), fullname + "ann.vcf"]))
     oLogger.debug(exeCommand(' '.join(
         [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
-         vcfdatabase, fullname + "ann.vcf", ">", fullname + "annotated.vcf"])))
-    oLogger.debug(exeCommand(' '.join(['bgzip -c', fullname+"annotated.vcf", ">", fullname+"annotated.vcf.gz"])))
-    oLogger.debug(exeCommand(' '.join(['tabix -p','vcf', fullname+"annotated.vcf.gz"])))
+         vcfdatabase, fullname + "ann.vcf", ">", final])))
+    oLogger.debug(exeCommand(' '.join(['bgzip -c', final, ">", "%s.gz" %(final)"])))
+    oLogger.debug(exeCommand(' '.join(['tabix -p','vcf', "%s.gz" %(final)"])))
+    oLogger.debug(
     oLogger.info("Added rsID")
 
 
@@ -304,7 +305,7 @@ if __name__ == '__main__':
     STARout += uname
     HISAT2out += uname
     job = temporary + uname
-    final = output + "/" + uname + ".recode.vcf"
+    #final = output + "/" + uname + ".recode.vcf"
     for d in [TEMP, STARout, HISAT2out]:
         try:
             os.makedirs(d)
