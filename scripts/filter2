@@ -21,12 +21,9 @@ fi
 
 ls $TEMP/*.recode.vcf.gz > lsfile
 
-$VCFCONCAT -f lsfile | bgzip -c > temp.vcf.gz
-$VCFTOOLS --gzvcf temp.vcf.gz --exclude-positions $EDITSITE --recode --recode-INFO-all --out $UNAME
+$VCFCONCAT -f lsfile | bgzip -c > $TEMP/temp.vcf.gz
+$VCFTOOLS --gzvcf $TEMP/temp.vcf.gz --exclude-positions $EDITSITE --recode --recode-INFO-all --out $TEMP/$UNAME
 
 #bgzip -c $UNAME.recode.vcf > $UNAME.recode.vcf.gz
 #tabix -p vcf $UNAME.recode.vcf.gz
-mv $UNAME.recode.vcf $OUTPUT
-
-
-
+#mv $TEMP/$UNAME.recode.vcf $OUTPUT

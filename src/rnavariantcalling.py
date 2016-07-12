@@ -130,20 +130,19 @@ def filter2():
 
 
 def snpEff(ref, names={'hg19':'GRCh37.75', 'mm10':'GRCm38.82'}):
-    os.chdir(output)
-    fullname = output+"/"+uname
+    tempname = TEMP+"/"+uname
     oLogger.debug(exeCommand(' '.join([java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpEff, "-v",
-                         names[ref], fullname + ".recode.vcf", ">", fullname + "ann.vcf"])))
+                         names[ref], "%s.recode.vcf" %(tempname), ">", "%s.ann.vcf" %(tempname)])))
     oLogger.info("Done annotation!")
 
 
 def snpSift():
-    fullname = output+"/"+uname
+    tempname = TEMP+"/"+uname
     final = "%s/final.annotated.vcf" %(output)
-    exeCommand(' '.join(["sed 's/^chr//'", fullname + "ann.vcf", ">", output+"/tmp", "&& mv %s" %(output+"/tmp"), fullname + "ann.vcf"]))
+    exeCommand("sed -i.bak 's/^chr//' %s.ann.vcf" %(tempname))
     oLogger.debug(exeCommand(' '.join(
         [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
-         vcfdatabase, fullname + "ann.vcf", ">", final])))
+         vcfdatabase, "%s.ann.vcf" %(tempname), ">", final])))
     oLogger.debug(exeCommand(' '.join(['bgzip -c', final, ">", "%s.gz" %(final)"])))
     oLogger.debug(exeCommand(' '.join(['tabix -p','vcf', "%s.gz" %(final)"])))
     oLogger.debug(
