@@ -1,0 +1,8 @@
+#!/bin/bash 
+REGION=$1
+REF=$2
+BAM=$3
+OUT=$4
+THREADS=$5
+
+freebayes-parallel $REGION $THREADS -f $REF -C 5 $BAM 2>&1 > $OUT

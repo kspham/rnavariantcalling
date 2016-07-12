@@ -1,4 +1,4 @@
-#!/cluster/home/kspham/.local/bin/python
+#!/usr/bin/python
 
 """ Pipeline calling variant from RNA-seq"""
 
@@ -143,7 +143,7 @@ def snpSift():
     oLogger.debug(exeCommand(' '.join(
         [java, "-d64 -Xms4G -Xmx8G -XX:+UseConcMarkSweepGC -XX:-UseGCOverheadLimit", "-jar", SnpSift, "annotate", "-id",
          vcfdatabase, "%s.ann.vcf" %(tempname), ">", final])))
-    oLogger.debug(exeCommand(' '.join(['bgzip -c', final, ">", "%s.gz" %(final)])))
+    oLogger.debug(exeCommand(' '.join(['bgzip -c', final, ">", "%s.gz" %(final)"])))
     oLogger.debug(exeCommand(' '.join(['tabix -p','vcf', "%s.gz" %(final)])))
     oLogger.info("Added rsID")
 
