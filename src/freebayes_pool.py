@@ -40,6 +40,7 @@ refFilePath = str(parserInstance.values.ref)
 outFilePath = str(parserInstance.values.out)
 threadCount = int(parserInstance.values.thread)
 numCount = int(parserInstance.values.num)
+ignoreChrM = True
 
 ###Open VCF output file
 outFileTmpPath = "%s.tmp" % (outFilePath)
@@ -82,22 +83,23 @@ def main():
     if len(sCommand) > 0:
         arrListParam.append(sCommand)
 
-    if (debugMode > 0):
-        print("Prepare chrM region for freebayes")
-
     ###USE for CHR-M
-    oRegionChrMFile = open(regionChrMFilePath)
-    for line in oRegionChrMFile:
-        line = line.strip()
-        if (len(arrRegionTMP) == 13):
-            sCommand = createCommand(prefixCommand, arrRegionTMP)
-            if(len(sCommand) > 0):
-                arrListParam.append(sCommand)
-            arrRegionTMP.clear()
-        else:
-            if (len(line) > 0):
-                arrRegionTMP.add(line)
-    oRegionChrMFile.close()
+    if ignoreChrM == False:
+        if (debugMode > 0):
+            print("Prepare chrM region for freebayes")
+
+        oRegionChrMFile = open(regionChrMFilePath)
+        for line in oRegionChrMFile:
+            line = line.strip()
+            if (len(arrRegionTMP) == 13):
+                sCommand = createCommand(prefixCommand, arrRegionTMP)
+                if(len(sCommand) > 0):
+                    arrListParam.append(sCommand)
+                arrRegionTMP.clear()
+            else:
+                if (len(line) > 0):
+                    arrRegionTMP.add(line)
+        oRegionChrMFile.close()
 
     if (len(arrRegionTMP) > 0):
         sCommand = createCommand(prefixCommand, arrRegionTMP)
