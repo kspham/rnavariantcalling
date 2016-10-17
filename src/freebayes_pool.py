@@ -52,7 +52,7 @@ def executeCommand(sCommand):
     global outTmpFile
     if (debugMode > 0):
         print("Command: %s" % (sCommand))
-    subprocess.Popen(sCommand, shell=True, stdout=outTmpFile, stderr=subprocess.STDERR, close_fds=True).communicate()
+    subprocess.Popen(sCommand, shell=True, stdout=outTmpFile, stderr=subprocess.STDOUT, close_fds=True).communicate()
 
 ###Create freebayes command
 def createCommand(prefixCommand, arrRegionTMP):
