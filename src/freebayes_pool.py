@@ -55,12 +55,10 @@ def executeCommand(sCommand):
     subprocess.Popen(sCommand, shell=True, stdout=outTmpFile, stderr=subprocess.STDOUT, close_fds=True).communicate()
 
 ###Create freebayes command
-def createCommand(prefixCommand, arrRegionTMP, ignoreHeader):
+def createCommand(prefixCommand, arrRegionTMP):
     sCommand = ""
     if(len(arrRegionTMP) > 0):
         sCommand = prefixCommand + " --region %s" % (','.join(list(arrRegionTMP)))
-        if (ignoreHeader == True):
-            sCommand = sCommand + " --no-header"
     return sCommand
 
 ###Logic business
@@ -80,7 +78,7 @@ def main():
     arrRegionTMP = set()
     arrFirstRegionTMP = set()
     arrFirstRegionTMP.add('chr1:0-1')
-    sCommand = createCommand(prefixCommand, arrFirstRegionTMP, False)
+    sCommand = createCommand(prefixCommand, arrFirstRegionTMP)
     if len(sCommand) > 0:
         arrListParam.append(sCommand)
 
@@ -92,7 +90,7 @@ def main():
     for line in oRegionChrMFile:
         line = line.strip()
         if (len(arrRegionTMP) == 13):
-            sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+            sCommand = createCommand(prefixCommand, arrRegionTMP)
             if(len(sCommand) > 0):
                 arrListParam.append(sCommand)
             arrRegionTMP.clear()
@@ -102,7 +100,7 @@ def main():
     oRegionChrMFile.close()
 
     if (len(arrRegionTMP) > 0):
-        sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+        sCommand = createCommand(prefixCommand, arrRegionTMP)
         if (len(sCommand) > 0):
             arrListParam.append(sCommand)
         arrRegionTMP.clear()
@@ -115,7 +113,7 @@ def main():
     for line in oRegionFile:
         line = line.strip()
         if (len(arrRegionTMP) == numCount):
-            sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+            sCommand = createCommand(prefixCommand, arrRegionTMP)
             if (len(sCommand) > 0):
                 arrListParam.append(sCommand)
             arrRegionTMP.clear()
@@ -125,7 +123,7 @@ def main():
     oRegionFile.close()
 
     if(len(arrRegionTMP) > 0):
-        sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+        sCommand = createCommand(prefixCommand, arrRegionTMP)
         if (len(sCommand) > 0):
             arrListParam.append(sCommand)
         arrRegionTMP.clear()
