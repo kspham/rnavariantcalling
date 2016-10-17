@@ -42,33 +42,28 @@ threadCount = int(parserInstance.values.thread)
 numCount = int(parserInstance.values.num)
 
 ###Open VCF output file
-if os.path.exists(outFilePath):
-    os.remove(outFilePath)
-outFile = open(outFilePath, 'a')
+outFileTmpPath = "%s.tmp" % (outFilePath)
+if os.path.exists(outFileTmpPath):
+    os.remove(outFileTmpPath)
+outTmpFile = open(outFileTmpPath, 'w')
 
 ###Execute the command
 def executeCommand(sCommand):
-    ###Debug information
+    global outTmpFile
     if (debugMode > 0):
         print("Command: %s" % (sCommand))
-
-    ###Get all output data
-    subprocess.Popen(sCommand, shell=True, stdout=outFile, stderr=subprocess.STDERR, close_fds=True).communicate()
-
-    ###Flush to DISK
-    outFile.flush()
+    subprocess.Popen(sCommand, shell=True, stdout=outTmpFile, stderr=subprocess.STDERR, close_fds=True).communicate()
 
 ###Create freebayes command
-def createCommand(prefixCommand, arrRegionTMP, ignoreHeader):
+def createCommand(prefixCommand, arrRegionTMP):
     sCommand = ""
     if(len(arrRegionTMP) > 0):
         sCommand = prefixCommand + " --region %s" % (','.join(list(arrRegionTMP)))
-        if(ignoreHeader == True):
-            sCommand = sCommand + " --no-header"
     return sCommand
 
 ###Logic business
 def main():
+    global outTmpFile
     if ((len(regionFilePath) == 0) or (len(refFilePath) == 0) or (len(outFilePath) == 0)):
         parserInstance.print_help()
         sys.exit(1)
@@ -76,7 +71,6 @@ def main():
     iStartTime = time.time()
     arrListParam = []
     prefixCommand = "%s -f %s -C %d %s" % (freebayesBinPath, refFilePath, minAlterbateCount, bamFilePath)
-    outFile = open(outFilePath, 'w')
 
     if (debugMode > 0):
         print("Create VCF HEADER")
@@ -84,10 +78,10 @@ def main():
     arrRegionTMP = set()
     arrFirstRegionTMP = set()
     arrFirstRegionTMP.add('chr1:0-1')
-    sCommand = createCommand(prefixCommand, arrFirstRegionTMP, False)
-    arrListParam.append(sCommand)
+    sCommand = createCommand(prefixCommand, arrFirstRegionTMP)
+    if len(sCommand) > 0:
+        arrListParam.append(sCommand)
 
-    """
     if (debugMode > 0):
         print("Prepare chrM region for freebayes")
 
@@ -96,7 +90,7 @@ def main():
     for line in oRegionChrMFile:
         line = line.strip()
         if (len(arrRegionTMP) == 13):
-            sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+            sCommand = createCommand(prefixCommand, arrRegionTMP)
             if(len(sCommand) > 0):
                 arrListParam.append(sCommand)
             arrRegionTMP.clear()
@@ -106,11 +100,10 @@ def main():
     oRegionChrMFile.close()
 
     if (len(arrRegionTMP) > 0):
-        sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+        sCommand = createCommand(prefixCommand, arrRegionTMP)
         if (len(sCommand) > 0):
             arrListParam.append(sCommand)
         arrRegionTMP.clear()
-    """
 
     if (debugMode > 0):
         print("Prepare other region for freebayes")
@@ -120,7 +113,7 @@ def main():
     for line in oRegionFile:
         line = line.strip()
         if (len(arrRegionTMP) == numCount):
-            sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+            sCommand = createCommand(prefixCommand, arrRegionTMP)
             if (len(sCommand) > 0):
                 arrListParam.append(sCommand)
             arrRegionTMP.clear()
@@ -130,7 +123,7 @@ def main():
     oRegionFile.close()
 
     if(len(arrRegionTMP) > 0):
-        sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+        sCommand = createCommand(prefixCommand, arrRegionTMP)
         if (len(sCommand) > 0):
             arrListParam.append(sCommand)
         arrRegionTMP.clear()
@@ -145,7 +138,39 @@ def main():
         oFastQCPool.wait()
 
     ###Close file to SYNC DISK
+    sys.stdout.flush()
+    sleep(2)
+    outTmpFile.close()
+
+    ###START VALID VCF file########
+    ###Check output file data
+    if os.path.exists(outFilePath):
+        os.remove(outFilePath)
+    outFile = open(outFilePath, 'w')
+    ###Write the FIRST header
+    with open(outFileTmpPath, 'r') as oReadFile:
+        for lineData in oReadFile:
+            lineData = lineData.strip()
+            if(len(lineData) == 0):
+                continue
+            if lineData[0:2] != "##":
+                break
+            outFile.write(lineData)
+            outFile.write("\n")
+        oReadFile.close()
+    ###Write the valid VCF line
+    with open(outFileTmpPath, 'r') as oReadFile:
+        for lineData in oReadFile:
+            lineData = lineData.strip()
+            if (len(lineData) == 0):
+                continue
+            if lineData[0:2] != "chr":
+                continue
+            outFile.write(lineData)
+            outFile.write("\n")
+        oReadFile.close()
     outFile.close()
+    ###END VALID VCF file########
 
     ###Debug information
     iEndTime = time.time()
