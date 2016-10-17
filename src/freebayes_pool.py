@@ -53,7 +53,7 @@ def executeCommand(sCommand):
         print("Command: %s" % (sCommand))
 
     ###Get all output data
-    subprocess.Popen(sCommand, shell=True, stdout=outFile, stderr=subprocess.STDOUT, close_fds=True).communicate()
+    subprocess.Popen(sCommand, shell=True, stdout=outFile, stderr=subprocess.STDERR, close_fds=True).communicate()
 
     ###Flush to DISK
     outFile.flush()
