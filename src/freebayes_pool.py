@@ -40,7 +40,7 @@ refFilePath = str(parserInstance.values.ref)
 outFilePath = str(parserInstance.values.out)
 threadCount = int(parserInstance.values.thread)
 numCount = int(parserInstance.values.num)
-ignoreChrM = True
+ignoreChrM = False
 
 ###Open VCF output file
 outFileTmpPath = "%s.tmp" % (outFilePath)
@@ -169,8 +169,10 @@ def main():
                 continue
             if lineData[0:3] != "chr":
                 continue
-            outFile.write(lineData)
-            outFile.write("\n")
+            arrData = lineData.split("\t")
+            if len(arrData) > 6:
+                outFile.write(lineData)
+                outFile.write("\n")
         oReadFile.close()
     outFile.close()
     ###END VALID VCF file########
