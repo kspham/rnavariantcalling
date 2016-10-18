@@ -40,20 +40,21 @@ refFilePath = str(parserInstance.values.ref)
 outFilePath = str(parserInstance.values.out)
 threadCount = int(parserInstance.values.thread)
 numCount = int(parserInstance.values.num)
-ignoreChrM = False
-
-###Open VCF output file
-outFileTmpPath = "%s.tmp" % (outFilePath)
-if os.path.exists(outFileTmpPath):
-    os.remove(outFileTmpPath)
-outTmpFile = open(outFileTmpPath, 'w')
+ignoreChrM = True
 
 ###Execute the command
 def executeCommand(sCommand):
-    global outTmpFile
+    global outFilePath
+    arrCommand = sCommand.split("|||")
+    outFileTmpPath = "%s.%s.tmp" % (outFilePath, arrCommand[0])
+    if os.path.exists(outFileTmpPath):
+        os.remove(outFileTmpPath)
+    outTmpFile = open(outFileTmpPath, 'w')
     if (debugMode > 0):
-        print("Command: %s" % (sCommand))
-    subprocess.Popen(sCommand, shell=True, stdout=outTmpFile, stderr=subprocess.STDOUT, close_fds=True).communicate()
+        print("Command: %s" % (arrCommand[0]))
+    subprocess.Popen(arrCommand[0], shell=True, stdout=outTmpFile, stderr=subprocess.STDOUT, close_fds=True).communicate()
+    sys.stdout.flush()
+    outTmpFile.close()
 
 ###Create freebayes command
 def createCommand(prefixCommand, arrRegionTMP, ignoreHeader):
@@ -66,7 +67,6 @@ def createCommand(prefixCommand, arrRegionTMP, ignoreHeader):
 
 ###Logic business
 def main():
-    global outTmpFile
     global ignoreChrM
     if ((len(regionFilePath) == 0) or (len(refFilePath) == 0) or (len(outFilePath) == 0)):
         parserInstance.print_help()
@@ -79,12 +79,15 @@ def main():
     if (debugMode > 0):
         print("Create VCF HEADER")
 
+    jFileIndex = 0
     arrRegionTMP = set()
     arrFirstRegionTMP = set()
     arrFirstRegionTMP.add('chr1:0-1')
     sCommand = createCommand(prefixCommand, arrFirstRegionTMP, False)
     if len(sCommand) > 0:
-        arrListParam.append(sCommand)
+        sFullCommand = "%s|||%s" % (sCommand, str(jFileIndex))
+        jFileIndex = jFileIndex + 1
+        arrListParam.append(sFullCommand)
 
     ###USE for CHR-M
     if ignoreChrM == False:
@@ -97,7 +100,9 @@ def main():
             if (len(arrRegionTMP) == 13):
                 sCommand = createCommand(prefixCommand, arrRegionTMP, True)
                 if(len(sCommand) > 0):
-                    arrListParam.append(sCommand)
+                    sFullCommand = "%s|||%s" % (sCommand, str(jFileIndex))
+                    jFileIndex = jFileIndex + 1
+                    arrListParam.append(sFullCommand)
                 arrRegionTMP.clear()
             else:
                 if (len(line) > 0):
@@ -107,7 +112,9 @@ def main():
         if (len(arrRegionTMP) > 0):
             sCommand = createCommand(prefixCommand, arrRegionTMP, True)
             if (len(sCommand) > 0):
-                arrListParam.append(sCommand)
+                sFullCommand = "%s|||%s" % (sCommand, str(jFileIndex))
+                jFileIndex = jFileIndex + 1
+                arrListParam.append(sFullCommand)
             arrRegionTMP.clear()
 
     ###USE for other CHRM
@@ -119,7 +126,9 @@ def main():
         if (len(arrRegionTMP) == numCount):
             sCommand = createCommand(prefixCommand, arrRegionTMP, True)
             if (len(sCommand) > 0):
-                arrListParam.append(sCommand)
+                sFullCommand = "%s|||%s" % (sCommand, str(jFileIndex))
+                jFileIndex = jFileIndex + 1
+                arrListParam.append(sFullCommand)
             arrRegionTMP.clear()
         else:
             if(len(line) > 0):
@@ -129,7 +138,9 @@ def main():
     if(len(arrRegionTMP) > 0):
         sCommand = createCommand(prefixCommand, arrRegionTMP, True)
         if (len(sCommand) > 0):
-            arrListParam.append(sCommand)
+            sFullCommand = "%s|||%s" % (sCommand, str(jFileIndex))
+            jFileIndex = jFileIndex + 1
+            arrListParam.append(sFullCommand)
         arrRegionTMP.clear()
 
     if (debugMode > 0):
@@ -141,39 +152,31 @@ def main():
         [oFastQCPool.putRequest(req) for req in arrRequest]
         oFastQCPool.wait()
 
-    ###Close file to SYNC DISK
-    sys.stdout.flush()
-    outTmpFile.close()
-
     ###START VALID VCF file########
-    ###Check output file data
     if os.path.exists(outFilePath):
         os.remove(outFilePath)
     outFile = open(outFilePath, 'w')
-    ###Write the FIRST header
-    with open(outFileTmpPath, 'r') as oReadFile:
-        for lineData in oReadFile:
-            lineData = lineData.strip()
-            if(len(lineData) == 0):
-                continue
-            if lineData[0:2] != "##":
-                break
-            outFile.write(lineData)
-            outFile.write("\n")
-        oReadFile.close()
-    ###Write the valid VCF line
-    with open(outFileTmpPath, 'r') as oReadFile:
-        for lineData in oReadFile:
-            lineData = lineData.strip()
-            if (len(lineData) == 0):
-                continue
-            if lineData[0:3] != "chr":
-                continue
-            arrData = lineData.split("\t")
-            if len(arrData) > 6:
-                outFile.write(lineData)
-                outFile.write("\n")
-        oReadFile.close()
+    for iFileIndex in range(0, jFileIndex):
+        outFileTmpPath = "%s.%s.tmp" % (outFilePath, str(iFileIndex))
+        with open(outFileTmpPath, 'r') as oReadFile:
+            for lineData in oReadFile:
+                lineData = lineData.strip()
+                if (len(lineData) == 0):
+                    continue
+                elif lineData[0:2] == "##":
+                    outFile.write(lineData)
+                    outFile.write("\n")
+                elif lineData[0:3] == "chr":
+                    arrData = lineData.split("\t")
+                    if len(arrData) > 6:
+                        arrChrID = arrData[0].split("chr")
+                        chrID = "chr" + arrChrID[1]
+                        outFile.write(chrID)
+                        outFile.write("\t")
+                        outFile.write("\t".join(arrData[1:]))
+                        outFile.write("\n")
+            oReadFile.close()
+            os.remove(outFileTmpPath)
     outFile.close()
     ###END VALID VCF file########
 

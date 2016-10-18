@@ -39,7 +39,11 @@ def main():
                 continue
             arrData = lineData.split("\t")
             if len(arrData) > 6:
-                outFile.write(lineData)
+                arrChrID = arrData[0].split("chr")
+                chrID = "chr" + arrChrID[1]
+                outFile.write(chrID)
+                outFile.write("\t")
+                outFile.write("\t".join(arrData[1:]))
                 outFile.write("\n")
         oReadFile.close()
     outFile.close()
