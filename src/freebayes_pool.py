@@ -163,7 +163,7 @@ def main():
                 lineData = lineData.strip()
                 if (len(lineData) == 0):
                     continue
-                elif lineData[0:2] == "##":
+                elif lineData[0:1] == "#":
                     outFile.write(lineData)
                     outFile.write("\n")
                 elif lineData[0:3] == "chr":

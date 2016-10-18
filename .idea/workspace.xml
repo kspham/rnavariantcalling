@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="9ef099de-e66e-4c5a-9e5d-867c6806b52a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/fix_vcf.py" afterPath="$PROJECT_DIR$/src/fix_vcf.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/freebayes_pool.py" afterPath="$PROJECT_DIR$/src/freebayes_pool.py" />
     </list>
     <ignored path="rnavariantcalling.iws" />
@@ -27,8 +28,8 @@
       <file leaf-file-name="fix_vcf.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/fix_vcf.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="490">
-              <caret line="46" column="35" selection-start-line="41" selection-start-column="16" selection-end-line="46" selection-end-column="35" />
+            <state relative-caret-position="243">
+              <caret line="24" column="24" selection-start-line="24" selection-start-column="24" selection-end-line="24" selection-end-column="24" />
               <folding>
                 <element signature="e#87#104#0" expanded="true" />
               </folding>
@@ -39,8 +40,8 @@
       <file leaf-file-name="freebayes_pool.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/freebayes_pool.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="284">
-              <caret line="168" column="44" selection-start-line="168" selection-start-column="44" selection-end-line="168" selection-end-column="44" />
+            <state relative-caret-position="265">
+              <caret line="165" column="40" selection-start-line="165" selection-start-column="40" selection-end-line="165" selection-end-column="40" />
               <folding>
                 <element signature="e#241#258#0" expanded="true" />
               </folding>
@@ -63,8 +64,8 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/fix_vcf.py" />
         <option value="$PROJECT_DIR$/src/freebayes_pool.py" />
+        <option value="$PROJECT_DIR$/src/fix_vcf.py" />
       </list>
     </option>
   </component>
@@ -466,8 +467,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/fix_vcf.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="490">
-          <caret line="46" column="35" selection-start-line="41" selection-start-column="16" selection-end-line="46" selection-end-column="35" />
+        <state relative-caret-position="243">
+          <caret line="24" column="24" selection-start-line="24" selection-start-column="24" selection-end-line="24" selection-end-column="24" />
           <folding>
             <element signature="e#87#104#0" expanded="true" />
           </folding>
@@ -476,8 +477,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/freebayes_pool.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="284">
-          <caret line="168" column="44" selection-start-line="168" selection-start-column="44" selection-end-line="168" selection-end-column="44" />
+        <state relative-caret-position="265">
+          <caret line="165" column="40" selection-start-line="165" selection-start-column="40" selection-end-line="165" selection-end-column="40" />
           <folding>
             <element signature="e#241#258#0" expanded="true" />
           </folding>

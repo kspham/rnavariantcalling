@@ -23,7 +23,7 @@ def main():
             lineData = lineData.strip()
             if(len(lineData) == 0):
                 continue
-            if lineData[0:2] != "##":
+            if lineData[0:1] != "#":
                 break
             outFile.write(lineData)
             outFile.write("\n")
