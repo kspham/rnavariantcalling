@@ -143,7 +143,6 @@ def main():
 
     ###Close file to SYNC DISK
     sys.stdout.flush()
-    sleep(2)
     outTmpFile.close()
 
     ###START VALID VCF file########
@@ -168,7 +167,7 @@ def main():
             lineData = lineData.strip()
             if (len(lineData) == 0):
                 continue
-            if lineData[0:2] != "chr":
+            if lineData[0:3] != "chr":
                 continue
             outFile.write(lineData)
             outFile.write("\n")
