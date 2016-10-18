@@ -46,7 +46,7 @@ ignoreChrM = True
 def executeCommand(sCommand):
     global outFilePath
     arrCommand = sCommand.split("|||")
-    outFileTmpPath = "%s.%s.tmp" % (outFilePath, arrCommand[0])
+    outFileTmpPath = "%s.%s.tmp" % (outFilePath, arrCommand[1])
     if os.path.exists(outFileTmpPath):
         os.remove(outFileTmpPath)
     outTmpFile = open(outFileTmpPath, 'w')
