@@ -56,15 +56,18 @@ def executeCommand(sCommand):
     subprocess.Popen(sCommand, shell=True, stdout=outTmpFile, stderr=subprocess.STDOUT, close_fds=True).communicate()
 
 ###Create freebayes command
-def createCommand(prefixCommand, arrRegionTMP):
+def createCommand(prefixCommand, arrRegionTMP, ignoreHeader):
     sCommand = ""
     if(len(arrRegionTMP) > 0):
         sCommand = prefixCommand + " --region %s" % (','.join(list(arrRegionTMP)))
+        if (ignoreHeader == True):
+            sCommand = sCommand + " --no-header"
     return sCommand
 
 ###Logic business
 def main():
     global outTmpFile
+    global ignoreChrM
     if ((len(regionFilePath) == 0) or (len(refFilePath) == 0) or (len(outFilePath) == 0)):
         parserInstance.print_help()
         sys.exit(1)
@@ -79,7 +82,7 @@ def main():
     arrRegionTMP = set()
     arrFirstRegionTMP = set()
     arrFirstRegionTMP.add('chr1:0-1')
-    sCommand = createCommand(prefixCommand, arrFirstRegionTMP)
+    sCommand = createCommand(prefixCommand, arrFirstRegionTMP, False)
     if len(sCommand) > 0:
         arrListParam.append(sCommand)
 
@@ -92,7 +95,7 @@ def main():
         for line in oRegionChrMFile:
             line = line.strip()
             if (len(arrRegionTMP) == 13):
-                sCommand = createCommand(prefixCommand, arrRegionTMP)
+                sCommand = createCommand(prefixCommand, arrRegionTMP, True)
                 if(len(sCommand) > 0):
                     arrListParam.append(sCommand)
                 arrRegionTMP.clear()
@@ -101,21 +104,20 @@ def main():
                     arrRegionTMP.add(line)
         oRegionChrMFile.close()
 
-    if (len(arrRegionTMP) > 0):
-        sCommand = createCommand(prefixCommand, arrRegionTMP)
-        if (len(sCommand) > 0):
-            arrListParam.append(sCommand)
-        arrRegionTMP.clear()
-
-    if (debugMode > 0):
-        print("Prepare other region for freebayes")
+        if (len(arrRegionTMP) > 0):
+            sCommand = createCommand(prefixCommand, arrRegionTMP, True)
+            if (len(sCommand) > 0):
+                arrListParam.append(sCommand)
+            arrRegionTMP.clear()
 
     ###USE for other CHRM
+    if (debugMode > 0):
+        print("Prepare other region for freebayes")
     oRegionFile = open(regionFilePath)
     for line in oRegionFile:
         line = line.strip()
         if (len(arrRegionTMP) == numCount):
-            sCommand = createCommand(prefixCommand, arrRegionTMP)
+            sCommand = createCommand(prefixCommand, arrRegionTMP, True)
             if (len(sCommand) > 0):
                 arrListParam.append(sCommand)
             arrRegionTMP.clear()
@@ -125,7 +127,7 @@ def main():
     oRegionFile.close()
 
     if(len(arrRegionTMP) > 0):
-        sCommand = createCommand(prefixCommand, arrRegionTMP)
+        sCommand = createCommand(prefixCommand, arrRegionTMP, True)
         if (len(sCommand) > 0):
             arrListParam.append(sCommand)
         arrRegionTMP.clear()
