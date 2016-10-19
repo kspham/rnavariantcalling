@@ -74,14 +74,14 @@ def main():
 
     iStartTime = time.time()
     arrListParam = []
-    prefixCommand = "%s -f %s -C %d %s" % (freebayesBinPath, refFilePath, minAlterbateCount, bamFilePath)
-
-    if (debugMode > 0):
-        print("Create VCF HEADER")
-
     jFileIndex = 0
     arrRegionTMP = set()
     arrFirstRegionTMP = set()
+    prefixCommand = "%s -f %s -C %d %s" % (freebayesBinPath, refFilePath, minAlterbateCount, bamFilePath)
+
+    ###USE for CHR1-0-1
+    if (debugMode > 0):
+        print("Create VCF HEADER")
     arrFirstRegionTMP.add('chr1:0-1')
     sCommand = createCommand(prefixCommand, arrFirstRegionTMP, False)
     if len(sCommand) > 0:
@@ -167,13 +167,12 @@ def main():
                     outFile.write(lineData)
                     outFile.write("\n")
                 elif lineData[0:3] == "chr":
-                    arrData = lineData.split("\t")
-                    if len(arrData) > 6:
-                        arrChrID = arrData[0].split("chr")
-                        chrID = "chr" + arrChrID[1]
-                        outFile.write(chrID)
+                    arrLineData = lineData.split("\t")
+                    if len(arrLineData) > 6:
+                        arrChrID = arrLineData[0].split("chr")
+                        outFile.write(arrChrID[1])
                         outFile.write("\t")
-                        outFile.write("\t".join(arrData[1:]))
+                        outFile.write("\t".join(arrLineData[1:]))
                         outFile.write("\n")
             oReadFile.close()
             os.remove(outFileTmpPath)
@@ -182,7 +181,8 @@ def main():
 
     ###Debug information
     iEndTime = time.time()
-    print("Finish freebayes parallel in %d seconds" % (int(iEndTime) - int(iStartTime)))
+    if (debugMode > 0):
+        print("Finish freebayes parallel in %d seconds (%d files)" % ((int(iEndTime) - int(iStartTime)), jFileIndex))
 
 if __name__ == "__main__":
     sys.exit(main())

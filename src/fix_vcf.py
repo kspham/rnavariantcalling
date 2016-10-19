@@ -11,8 +11,8 @@ import os
 ###Logic business
 def main():
     iStartTime = time.time()
-    vcfFile = "/mnt/hdd2/hoapt/test_freebayes/seqlib.1.vcf.tmp"
-    vcfOutFile = "/mnt/hdd2/hoapt/test_freebayes/seqlib.1.vcf"
+    vcfFile = "/mnt/hdd2/hoapt/test_freebayes/seqlib.4.vcf.bk"
+    vcfOutFile = "/mnt/hdd2/hoapt/test_freebayes/seqlib.4.vcf"
 
     ###START VALID VCF file########
     outFile = open(vcfOutFile, 'w')
@@ -40,8 +40,7 @@ def main():
             arrData = lineData.split("\t")
             if len(arrData) > 6:
                 arrChrID = arrData[0].split("chr")
-                chrID = "chr" + arrChrID[1]
-                outFile.write(chrID)
+                outFile.write(arrChrID[1])
                 outFile.write("\t")
                 outFile.write("\t".join(arrData[1:]))
                 outFile.write("\n")
