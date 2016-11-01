@@ -191,14 +191,18 @@ if __name__ == '__main__':
     parser.add_argument('--onlySTAR', help='only run with STAR_mapping, not HISAT2_mapping', dest='onlySTAR', action='store_true')
     parser.add_argument('--cleanall', dest='cleanall', action='store_true')
     parser.add_argument('--moverBAM', dest='cleanall', action='store_true')
+    parser.add_argument('--ignoreCache', dest='ignoreCache', action='store_true')
     parser.add_argument('--fusion-Outdir','-F',help='output directory for fusion gene detection', type=str)
-    #parser.set_defaults(unset=[1,2,3,4,5,6,7,8,9,10])
+    
+    parser.set_defaults(ignoreCache=True)
     parser.set_defaults(onlySTAR=True)
     parser.set_defaults(cleanall=False)
     parser.set_defaults(moveBAM=False)
+    
     args = parser.parse_args()
-
-
+    if args.ignoreCache:
+        args.unset=range(1,12)
+        
     #Parse yaml file:
     with open(args.config, "r") as ymlfile:
         cfg = yaml.load(ymlfile)
