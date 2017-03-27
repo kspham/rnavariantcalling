@@ -91,9 +91,9 @@ if __name__ == '__main__':
     #regions = np.array(open(REG).read().strip().split("\n"), dtype=None)
     #regions = regions[np.random.permutation(len(regions))]
     regions = open(REG).read().strip().split("\n")
-    chr1_regions = [reg for reg in regions if reg.split("\t")[0] == "chr1"]
+    chr1_regions = [reg for reg in regions if reg.split("\t")[0] == "1"]
     remain_regions = list(set(regions) - set(chr1_regions))
-    remain_regions.sort(key=lambda x: x.split("\t")[0].split("chr")[1])
+    remain_regions.sort(key=lambda x: int(x.split("\t")[0]))
     oLogger.info(repr(chr1_regions[:5]) + str(len(chr1_regions)) +  repr(remain_regions[:5]) +  str(len((remain_regions))))
 
     
