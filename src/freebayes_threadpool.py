@@ -4,13 +4,13 @@ import subprocess
 import os
 import sys
 import numpy as np
-import logging
+import logging 
 
 from tempfile import *
 from threading import Thread
 from Queue import Queue
 
-BAYES, REF, REG, NUM, BAM, OUT = sys.argv[1:]
+BAYES, THREADS, REF, REG, NUM, BAM, OUT = sys.argv[1:]
 
 def LogInstance(log_file, debug=True):
     """
@@ -34,7 +34,7 @@ def LogInstance(log_file, debug=True):
     logger.addHandler(file_handler)
     return logger
 
-oLogger = LogInstance("variant_log.txt")
+oLogger = LogInstance(OUT+ "_variant_log.txt")
 
 def exeCommand(sCommand):
     process = subprocess.Popen(sCommand, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -53,7 +53,7 @@ class Worker(Thread):
 
     def __init__(self, tasks):
         Thread.__init__(self)
-        self.tasks = tasks
+        self.tasks = tasks 
         self.daemon = True
         self.start()
 
@@ -80,37 +80,57 @@ class ThreadPool:
         self.tasks.join()
 
 def call(f_tmp):
-    exeCommand(shellEscape(' '.join([BAYES, "-f", REF, "-C 2","-t", f_tmp ,BAM, ">", f_tmp+".vcf"])))
-    oLogger.debug("DONE: " + f_tmp.name)
+    exeCommand(shellEscape(' '.join([BAYES, "-f", REF, "-C 2","-t", f_tmp.name ,BAM, ">", f_tmp.name+".vcf"])))
+    oLogger.info("DONE: " + f_tmp.name)
 
 
 if __name__ == '__main__':
     # 1) Init a Thread pool with the desired number of threads
     pool = ThreadPool(int(THREADS))
 
-    regions = np.array(open(REG).read().strip().split("\n"), dtype=None)
-    regions = regions[np.random.permutation(len(regions))]
+    #regions = np.array(open(REG).read().strip().split("\n"), dtype=None)
+    #regions = regions[np.random.permutation(len(regions))]
+    regions = open(REG).read().strip().split("\n")
+    chr1_regions = [reg for reg in regions if reg.split("\t")[0] == "chr1"]
+    remain_regions = list(set(regions) - set(chr1_regions))
+    remain_regions.sort(key=lambda x: x.split("\t")[0].split("chr")[1])
+    oLogger.info(repr(chr1_regions[:5]) + str(len(chr1_regions)) +  repr(remain_regions[:5]) +  str(len((remain_regions))))
 
+    
     temps = []
     # 2) Add the task to the queue
-    for i in range(0, len(regions), int(NUM)):
+    for i in range(0, len(remain_regions), int(NUM)):
         f_tmp = NamedTemporaryFile(delete=False)
-        f_tmp.write("\n".join(regions[i:i+int(NUM)]))
+        f_tmp.write("\n".join(remain_regions[i:i+int(NUM)]))
         f_tmp.close()
         temps.append(f_tmp.name)
         pool.add_task(call,f_tmp)
     f_tmp = NamedTemporaryFile(delete=False)
-    f_tmp.write("\n".join(regions[i:]))
+    f_tmp.write("\n".join(remain_regions[i:]))
     f_tmp.close()
     temps.append(f_tmp.name)
     pool.add_task(call,f_tmp)
+    for i in range(0, len(chr1_regions), 50):
+        f_tmp = NamedTemporaryFile(delete=False)
+        f_tmp.write("\n".join(chr1_regions[i:i+50]))
+        f_tmp.close()
+        temps.append(f_tmp.name)
+        pool.add_task(call,f_tmp)
+    f_tmp = NamedTemporaryFile(delete=False)
+    f_tmp.write("\n".join(chr1_regions[i:]))
+    f_tmp.close()
+    temps.append(f_tmp.name)
+    pool.add_task(call,f_tmp)  
+
 
     # 3) Wait for completion
     pool.wait_completion()
 
-    f_tmps = open("tmp_vcfs.txt", "w")
+    f_tmps = open(OUT+"_tmp_vcfs.txt", "w")
     f_tmps.write("\n".join([f+".vcf" for f in temps]))
-    exeCommand(shellEscape(' '.join(["vcf-concat", "-f", f_tmps.name, ">", OUT])))
+    f_tmps.close()
+    exeCommand(shellEscape(' '.join(["vcf-concat", "-f", OUT+"_tmp_vcfs.txt", ">", OUT])))
     for f in temps:
-        os.unlink(f.name)
-        os.unlink(f.name+".vcf")
+        os.unlink(f)
+        #os.unlink(f+".vcf")
+
