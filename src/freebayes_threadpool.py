@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 import numpy as np
+import logging
 
 from tempfile import *
 from threading import Thread
